@@ -48,4 +48,19 @@
   flex-direction: column;
   gap: 24px;
   overflow: hidden;
+  padding: 16px 0;
+}
+
+.filters{
+  padding: 16px 16px 0;
+}
+
+.ant-drawer-content-wrapper{
+  height: 90vh !important;
+}
+
+.list-item{
+  line-height: 24px;
+  padding: 16px 0;
+  border-bottom: 1px solid #eee;
 }
