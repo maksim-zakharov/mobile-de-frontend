@@ -60,6 +60,7 @@ function App() {
 
     const onSelectModel = (brandKey: string) => {
         searchParams.set('model', brandKey);
+        searchParams.delete('drawer');
         setSearchParams(searchParams)
     }
 
