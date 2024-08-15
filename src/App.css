@@ -1,13 +1,50 @@
 .car-item{
+  font-family: "YS Text","YSTextVariable","Arial","Helvetica Neue","Helvetica",yandex-sans-rub-sign,sans-serif;
+  padding: 0 16px;
   img{
     width: 100vw !important;
-  }
-
-  .details{
-    word-wrap: break-word;
   }
 
   .slick-slide{
     max-width: 100%;
   }
+
+  .details{
+    word-wrap: break-word;
+    /*padding: 0 16px;*/
+    overflow: hidden;
+    display: grid;
+  }
+
+  .mileage{
+    color: #1c212899;
+    font-size: 13px;
+    line-height: 16px;
+  }
+
+  .title{
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    font-size: 15px;
+    line-height: 20px;
+    color: #333;
+  }
+
+  .price{
+    font-size: 15px;
+    line-height: 20px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    color: #333;
+    margin-bottom: 2px;
+  }
+}
+
+.car-item-container{
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  overflow: hidden;
 }

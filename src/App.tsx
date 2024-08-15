@@ -26,19 +26,23 @@ function App() {
 
   return (
     <>
-        {cars.map(car => <div className="car-item">
-          <h2 className="title">{car.title}</h2>
-          <div className="date">{car.date}</div>
-          <h4>Цена</h4>
-          <div className="price">{moneyFormat(car.price * 100)}</div>
-          <h4>Пробег</h4>
-          <div className="mileage">{shortNumberFormat(car.mileage)} км</div>
-          <h4>Описание</h4>
-          <p className="details">{car.detailsText}</p>
-          <Carousel>
-            {car.imgUrls.map(imgUrl => <img src={imgUrl.replace('mo-160', 'mo-360')} style={{width: '360px'}} alt=""/>)}
-          </Carousel>
-        </div>)}
+        <div className="car-item-container">
+            {cars.map(car => <div className="car-item">
+                {/*<h4>Описание</h4>*/}
+                {/*<p className="details">{car.detailsText}</p>*/}
+                <Carousel>
+                    {car.imgUrls.map(imgUrl => <img src={imgUrl.replace('mo-160', 'mo-360')} style={{width: '360px'}}
+                                                    alt=""/>)}
+                </Carousel>
+                <div className="details">
+                    <div className="price">{moneyFormat(car.price * 100, 0, 0)}</div>
+                    <span className="title">{car.title}</span>
+                    {/*<div className="date">{car.date}</div>*/}
+                    {/*<h4>Пробег</h4>*/}
+                    <div className="mileage">{car.date.split('/')[1]} г., {shortNumberFormat(car.mileage)} км</div>
+                </div>
+            </div>)}
+        </div>
     </>
   )
 }
