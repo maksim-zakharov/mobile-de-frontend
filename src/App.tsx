@@ -1,6 +1,6 @@
 import React from 'react'
 import './App.css'
-import {useGetCarsQuery} from "./api.tsx";
+import {useGetCarsQuery} from "./api";
 import {Carousel} from "antd";
 
 export const moneyFormat = (money: number, maximumFractionDigits = undefined, minimumFractionDigits = undefined) =>
