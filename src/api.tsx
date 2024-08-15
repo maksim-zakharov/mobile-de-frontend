@@ -4,7 +4,7 @@ export const api = createApi({
     reducerPath: 'api',
     tagTypes: [],
     baseQuery: fetchBaseQuery({
-        baseUrl: process.env.NODE_ENV === 'PROD' ? '/api' : process.env.BASE_URL
+        baseUrl: process.env.NODE_ENV !== 'dev' ? '/api' : process.env.BASE_URL
     }),
     endpoints: (builder) => ({
         getCars: builder.query<any, any>({
