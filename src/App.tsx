@@ -4,6 +4,7 @@ import viteLogo from '/vite.svg'
 import './App.css'
 import {useGetCarsQuery} from "./api.tsx";
 import {Carousel} from "antd";
+import useScroll from "./useScroll.tsx";
 
 export const moneyFormat = (money: number, maximumFractionDigits = undefined, minimumFractionDigits = undefined) =>
     new Intl.NumberFormat('ru-RU', {
@@ -22,6 +23,8 @@ export const shortNumberFormat = (number: number,minimumFractionDigits = undefin
 
 function App() {
   const [count, setCount] = useState(0)
+    const {yOffset} = useScroll();
+  console.log(yOffset)
 
     const {data} = useGetCarsQuery({});
 
