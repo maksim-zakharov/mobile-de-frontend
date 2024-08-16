@@ -1,6 +1,6 @@
 import React, {useMemo, useState} from 'react'
 import './App.css'
-import {useGetBrandsQuery, useGetCarsQuery, useGetModelsQuery} from "./api";
+import {useGetBrandsQuery, useGetCarByIdQuery, useGetCarsQuery, useGetModelsQuery} from "./api";
 import {Button, Carousel, Drawer, InputNumber, Select, Space, Spin} from "antd";
 import {useSearchParams} from "react-router-dom";
 import {LeftOutlined} from "@ant-design/icons"
@@ -51,6 +51,8 @@ function App() {
     const sort = searchParams.get('sort');
     const {sort: ssort, order} = t(sort);
 
+    const selectedCarId = searchParams.get('selectedCarId');
+
     let userId = searchParams.get('userId');
     if(window.Telegram?.WebApp?.initDataUnsafe){
         userId = window.Telegram.WebApp.initDataUnsafe.user?.id;
@@ -59,6 +61,10 @@ function App() {
     const {data, isLoading: isCarLoading} = useGetCarsQuery({brand, model, priceTo, priceFrom, mileageFrom, mileageTo, yearFrom, yearTo, sort: ssort, order, userId});
     const {data: brandsData, isLoading: isBrandsLoading} = useGetBrandsQuery({});
     const {data: modelsData, isLoading: isModelsLoading} = useGetModelsQuery({brand});
+
+    useGetCarByIdQuery({userId, id: selectedCarId}, {
+        skip: !selectedCarId
+    });
 
     const cars = data?.items || [];
     const carsTotal = data?.totalCount || 0;
@@ -72,6 +78,11 @@ function App() {
 
     const onClose = () => {
         searchParams.delete('drawer');
+        setSearchParams(searchParams)
+    };
+
+    const onSelectCar = (id: string) => {
+        searchParams.set('selectedCarId', id);
         setSearchParams(searchParams)
     };
 
@@ -164,7 +175,7 @@ function App() {
             </div>
             <div className="car-item-container">
                 {isCarLoading && <Spin />}
-                {!isCarLoading && cars.map(car => <div className="car-item">
+                {!isCarLoading && cars.map(car => <div onClick={() => onSelectCar(car.id)} className="car-item" key={car.id}>
                     {/*<h4>Описание</h4>*/}
                     {/*<p className="details">{car.detailsText}</p>*/}
                     <Carousel>
