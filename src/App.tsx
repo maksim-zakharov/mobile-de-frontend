@@ -20,7 +20,7 @@ export const shortNumberFormat = (number: number, minimumFractionDigits = undefi
         maximumFractionDigits,
     }).format(number || 0);
 
-const t = (str: string | number) => {
+const t = (str: string | null) => {
     if(!str){
         return {
             sort: undefined,
@@ -51,7 +51,12 @@ function App() {
     const sort = searchParams.get('sort');
     const {sort: ssort, order} = t(sort);
 
-    const {data, isLoading: isCarLoading} = useGetCarsQuery({brand, model, priceTo, priceFrom, mileageFrom, mileageTo, yearFrom, yearTo, sort: ssort, order});
+    let userId = searchParams.get('userId');
+    if(window.Telegram?.WebApp?.initDataUnsafe){
+        userId = window.Telegram.WebApp.initDataUnsafe.user?.id;
+    }
+
+    const {data, isLoading: isCarLoading} = useGetCarsQuery({brand, model, priceTo, priceFrom, mileageFrom, mileageTo, yearFrom, yearTo, sort: ssort, order, userId});
     const {data: brandsData, isLoading: isBrandsLoading} = useGetBrandsQuery({});
     const {data: modelsData, isLoading: isModelsLoading} = useGetModelsQuery({brand});
 
