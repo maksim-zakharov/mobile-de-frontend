@@ -1,7 +1,7 @@
-import React, {useState} from 'react'
+import React, {useMemo, useState} from 'react'
 import './App.css'
 import {useGetBrandsQuery, useGetCarsQuery, useGetModelsQuery} from "./api";
-import {Button, Carousel, Drawer, InputNumber, Space} from "antd";
+import {Button, Carousel, Drawer, InputNumber, Select, Space, Spin} from "antd";
 import {useSearchParams} from "react-router-dom";
 import {LeftOutlined} from "@ant-design/icons"
 
@@ -20,6 +20,21 @@ export const shortNumberFormat = (number: number, minimumFractionDigits = undefi
         maximumFractionDigits,
     }).format(number || 0);
 
+const t = (str: string | number) => {
+    if(!str){
+        return {
+            sort: undefined,
+            order: undefined,
+        }
+    }
+
+    const [sort, order] = str.split('&');
+    return {
+        sort: sort.split('=')[1],
+        order: order.split('=')[1],
+    }
+}
+
 function App() {
 
     const [searchParams, setSearchParams] = useSearchParams();
@@ -33,15 +48,17 @@ function App() {
     const mileageTo = searchParams.get('mileageTo');
     const yearFrom = searchParams.get('yearFrom');
     const yearTo = searchParams.get('yearTo');
+    const sort = searchParams.get('sort');
+    const {sort: ssort, order} = t(sort);
 
-    const {data} = useGetCarsQuery({brand, model, priceTo, priceFrom, mileageFrom, mileageTo, yearFrom, yearTo});
-    const {data: brandsData} = useGetBrandsQuery({});
-    const {data: modelsData} = useGetModelsQuery({brand});
+    const {data, isLoading: isCarLoading} = useGetCarsQuery({brand, model, priceTo, priceFrom, mileageFrom, mileageTo, yearFrom, yearTo, sort: ssort, order});
+    const {data: brandsData, isLoading: isBrandsLoading} = useGetBrandsQuery({});
+    const {data: modelsData, isLoading: isModelsLoading} = useGetModelsQuery({brand});
 
     const cars = data?.items || [];
     const carsTotal = data?.totalCount || 0;
     const brands = brandsData || [];
-    const models = modelsData || [];
+    const models = useMemo(() => (modelsData || []).map(m => m.items ? m.items : [m]).flat(), [modelsData]);
 
     const showDrawer = () => {
         searchParams.set('drawer', brand ? 'model' : 'brand');
@@ -70,13 +87,14 @@ function App() {
         searchParams.delete('drawer');
         setSearchParams(searchParams)
     }
-    const [{_priceFrom, _priceTo, _mileageFrom, _mileageTo, _yearFrom, _yearTo}, setParams] = useState({
+    const [{_priceFrom, _priceTo, _mileageFrom, _sort, _mileageTo, _yearFrom, _yearTo}, setParams] = useState({
         _priceFrom: priceFrom || '',
         _priceTo: priceTo || '',
         _mileageFrom: mileageFrom || '',
         _mileageTo: mileageTo || '',
         _yearFrom: yearFrom || '',
-        _yearTo: yearTo || ''
+        _yearTo: yearTo || '',
+        _sort: sort || 'sort=rel&order=asc'
     })
 
     const onChangeParams = (key: string) => (e) => {
@@ -93,6 +111,21 @@ function App() {
         setSearchParams(searchParams)
     }
 
+    const sortOptions = [
+        {label: 'По умолчанию', value: 'sort=rel&order=asc'},
+        {label: 'Цена по убыванию', value: 'sort=p&order=desc'},
+        {label: 'Цена по возрастанию', value: 'sort=p&order=asc'},
+        {label: 'Пробег по убыванию', value: 'sort=ml&order=desc'},
+        {label: 'Пробег по возрастанию', value: 'sort=ml&order=asc'},
+        {label: 'Год по убыванию', value: 'sort=fr&order=desc'},
+        {label: 'Год по возрастанию', value: 'sort=fr&order=asc'},
+    ]
+
+    const onChangeSort = (value: string) => {
+        searchParams.set('sort', value);
+        setSearchParams(searchParams)
+    }
+
     return (
         <>
             <div className="filters">
@@ -101,30 +134,32 @@ function App() {
                         Марка, модель
                     </Button>
                     <Space.Compact size="large">
-                        <InputNumber type="number" placeholder="Цена от" size="middle" value={_priceFrom}
+                        <InputNumber type="number" placeholder="Цена от" size="middle" value={_priceFrom} className="full-width"
                                      onChange={onChangeParams('_priceFrom')}/>
-                        <InputNumber type="number" placeholder="Цена до" size="middle" value={_priceTo}
+                        <InputNumber type="number" placeholder="Цена до" size="middle" value={_priceTo} className="full-width"
                                      onChange={onChangeParams('_priceTo')}/>
                     </Space.Compact>
                 </Space>
                 <Space.Compact size="large">
-                    <InputNumber type="number" placeholder="Пробег от" size="middle" value={_mileageFrom}
+                    <InputNumber type="number" placeholder="Пробег от" size="middle" value={_mileageFrom} className="full-width"
                                  onChange={onChangeParams('_mileageFrom')}/>
-                    <InputNumber type="number" placeholder="Пробег до" size="middle" value={_mileageTo}
+                    <InputNumber type="number" placeholder="Пробег до" size="middle" value={_mileageTo} className="full-width"
                                  onChange={onChangeParams('_mileageTo')}/>
                 </Space.Compact>
                 <Space.Compact size="large">
-                    <InputNumber type="number" placeholder="Год от" size="middle" value={_yearFrom}
+                    <InputNumber type="number" placeholder="Год от" size="middle" value={_yearFrom} className="full-width"
                                  onChange={onChangeParams('_yearFrom')}/>
-                    <InputNumber type="number" placeholder="Год до" size="middle" value={_yearTo}
+                    <InputNumber type="number" placeholder="Год до" size="middle" value={_yearTo} className="full-width"
                                  onChange={onChangeParams('_yearTo')}/>
                 </Space.Compact>
-                <Button onClick={acceptPrice}>
+                <Select placeholder="Сортировать по умолчанию" onChange={onChangeSort} options={sortOptions}/>
+                <Button type="primary" onClick={acceptPrice}>
                     Показать {carsTotal} предложений
                 </Button>
             </div>
             <div className="car-item-container">
-                {cars.map(car => <div className="car-item">
+                {isCarLoading && <Spin />}
+                {!isCarLoading && cars.map(car => <div className="car-item">
                     {/*<h4>Описание</h4>*/}
                     {/*<p className="details">{car.detailsText}</p>*/}
                     <Carousel>
@@ -147,7 +182,8 @@ function App() {
                 onClose={onClose}
                 open={drawer === 'brand'}
             >
-                {brands.map(brand => <div className="list-item" key={brand.value}
+                {isBrandsLoading && <Spin/>}
+                {!isBrandsLoading && brands.map(brand => <div className="list-item" key={brand.value}
                                           onClick={() => onSelectBrand(brand.value)}>{brand.label}</div>)}
             </Drawer>
             <Drawer
@@ -159,7 +195,8 @@ function App() {
                 <Button type="link" icon={<LeftOutlined/>} onClick={clearModel} style={{padding: 0}}>
                     Выбрать другую марку
                 </Button>
-                {models.map(brand => <div className="list-item" key={brand.value}
+                {isModelsLoading && <Spin/>}
+                {!isModelsLoading && models.map(brand => <div className="list-item" key={brand.value}
                                           onClick={() => onSelectModel(brand.value)}>{brand.label}</div>)}
             </Drawer>
         </>
