@@ -34,7 +34,8 @@ const MobileSelect: FC<SelectProps> = (props) => {
             // id={id}
             // ref={ref}
             // hidden
-            className="ant-input ant-input-outlined full-width ant-input-compact-item">
+            value={props.value}
+            onChange={e => props?.onChange(e.target.value)}>
             {props.options?.map(opt => <option value={opt.value}>{opt.label}</option>)}
         </select>
     </>
@@ -259,6 +260,15 @@ const CarsListPage = () => {
         }
     })], []);
 
+    const powerOptions = useCallback((label: string) => [{label, value: undefined}, ...Array.apply(null,{length: 200}).map((val, i) => {
+        const v = (i + 1) * 10;
+
+        return {
+            value: v,
+            label: shortNumberFormat(v)
+        }
+    })], []);
+
     return <>
         <div className="car-item-container">
             {/*<List data={combineResult} styles={virtualListStyles} height={500} itemHeight={314} itemKey="id">*/}
@@ -337,10 +347,10 @@ const CarsListPage = () => {
                     {/*             onChange={onChangeParams('_mileageTo')}/>*/}
                 </Space.Compact>
                 <Space.Compact size="large">
-                    <Input placeholder="Мощность л.с. от" size="middle" value={_pwFrom}
+                    <MobileSelect options={powerOptions('до')} placeholder="Мощность л.с. от" size="middle" value={_pwFrom}
                                  className="full-width"
                                  onChange={onChangeParams('_pwFrom')}/>
-                    <InputNumber type="number" placeholder="Мощность л.с. до" size="middle" value={_pwTo}
+                    <MobileSelect options={powerOptions('до')} placeholder="Мощность л.с. до" size="middle" value={_pwTo}
                                  className="full-width"
                                  onChange={onChangeParams('_pwTo')}/>
                 </Space.Compact>
