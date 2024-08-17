@@ -2,7 +2,9 @@
   font-family: "YS Text","YSTextVariable","Arial","Helvetica Neue","Helvetica",yandex-sans-rub-sign,sans-serif;
   padding: 0 16px;
   img{
-    width: 100vw !important;
+    width: calc(100vw - 32px) !important;
+    height: 250px;
+    object-fit: cover;
   }
 
   .slick-slide{

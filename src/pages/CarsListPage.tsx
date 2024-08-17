@@ -1,6 +1,7 @@
 import {Button, Carousel, Drawer, InputNumber, Select, Space, Spin} from "antd";
 import {LeftOutlined} from "@ant-design/icons";
-import React, {useMemo, useState} from "react";;
+import React, {useEffect, useMemo, useState} from "react";
+import List from 'rc-virtual-list';
 import {useNavigate, useSearchParams} from "react-router-dom";
 import {
     useGetBrandsQuery,
@@ -9,6 +10,7 @@ import {
     useGetCarsQuery,
     useGetModelsQuery
 } from "../api.tsx";
+import {virtualListStyles} from "../utils.ts";
 
 export const moneyFormat = (money: number, maximumFractionDigits = undefined, minimumFractionDigits = undefined) =>
     new Intl.NumberFormat('ru-RU', {
@@ -55,6 +57,7 @@ const CarsListPage = () => {
     const yearFrom = searchParams.get('yearFrom');
     const yearTo = searchParams.get('yearTo');
     const sort = searchParams.get('sort');
+    const page = searchParams.get('page') || '1';
     const {sort: ssort, order} = t(sort);
 
     let userId = searchParams.get('userId');
@@ -62,12 +65,19 @@ const CarsListPage = () => {
         userId = window.Telegram.WebApp.initDataUnsafe.user?.id;
     }
 
-    const {data, isLoading: isCarLoading} = useGetCarsQuery({brand, model, priceTo, priceFrom, mileageFrom, mileageTo, yearFrom, yearTo, sort: ssort, order, userId});
+    const {data, isLoading: isCarLoading} = useGetCarsQuery({brand, model, priceTo, priceFrom, mileageFrom, mileageTo, yearFrom, yearTo, sort: ssort, order, page, userId});
     const {data: brandsData, isLoading: isBrandsLoading} = useGetBrandsQuery({});
     const {data: modelsData, isLoading: isModelsLoading} = useGetModelsQuery({brand});
 
     const cars = data?.items || [];
-    const carsTotal = data?.totalCount || 0;
+    const resultPage = data?.page || 0;
+
+    const [combineResult, setCombineResult] = useState<[]>([]);
+
+    useEffect(() => {
+        setCombineResult(prevState => prevState.concat(cars));
+    }, [resultPage]);
+
     const brands = brandsData || [];
     const models = useMemo(() => (modelsData || []).map(m => m.items ? m.items : [m]).flat(), [modelsData]);
 
@@ -114,6 +124,39 @@ const CarsListPage = () => {
     const {data: countData} = useGetCarsCountQuery({
         priceFrom: _priceFrom, priceTo: _priceTo, mileageFrom: _mileageFrom, mileageTo: _mileageTo, yearFrom: _yearFrom, yearTo: _yearTo, brand, model
     })
+
+    const docElements = document.getElementsByClassName("car-item-container");
+
+    let currentPage = true;
+
+    useEffect(() => {
+        currentPage = false;
+    }, [cars]);
+
+    window.addEventListener(
+        "scroll",
+        function (event) {
+            try {
+                const lastEl =
+                    docElements[0]?.children[docElements[0]?.children?.length - 1]
+                        ?.offsetTop - 2000;
+                const windowPageYOffset = window.pageYOffset;
+
+                if (windowPageYOffset >= lastEl && !isCarLoading && !currentPage) {
+                    currentPage = true;
+
+                    if (cars.length >= 20) {
+                        const prevOffset = 1 + Number(page);
+                        searchParams.set("page", prevOffset.toString());
+                        setSearchParams(searchParams)
+                    }
+                }
+            } catch (e) {
+                console.log("e =", e);
+            }
+        },
+        false,
+    );
 
     const showCount = countData?.count || 0;
 
@@ -178,14 +221,27 @@ return <>
         </div>
         <div className="car-item-container">
             {isCarLoading && <Spin />}
-            {!isCarLoading && cars.map(car => <div onClick={() => onSelectCar(car.id)} className="car-item" key={car.id}>
-                {/*<h4>Описание</h4>*/}
-                {/*<p className="details">{car.detailsText}</p>*/}
-                <Carousel>
-                    {car.imgUrls.map(imgUrl => <img src={imgUrl.replace('mo-160', 'mo-360')}
-                                                    style={{width: '360px'}}
-                                                    alt=""/>)}
-                </Carousel>
+            {/*<List data={combineResult} styles={virtualListStyles} height={500} itemHeight={314} itemKey="id">*/}
+            {/*    {(car =>*/}
+            {/*        <div onClick={() => onSelectCar(car.id)} className="car-item" key={car.id}>*/}
+            {/*            {car.imgUrls[0] && <img src={car.imgUrls[0].replace('mo-160', 'mo-360')}*/}
+            {/*                                    style={{width: '360px'}}*/}
+            {/*                                    alt=""/>}*/}
+            {/*            <div className="details">*/}
+            {/*                <div className="price">{moneyFormat(car.price, 0, 0)}</div>*/}
+            {/*                <span className="title">{car.title}</span>*/}
+            {/*                /!*<div className="date">{car.date}</div>*!/*/}
+            {/*                /!*<h4>Пробег</h4>*!/*/}
+            {/*                <div className="mileage">{car.date.split('/')[1]} г., {shortNumberFormat(car.mileage)} км*/}
+            {/*                </div>*/}
+            {/*            </div>*/}
+            {/*        </div>)}*/}
+            {/*</List>*/}
+            {!isCarLoading && combineResult.map(car => <div onClick={() => onSelectCar(car.id)} className="car-item"
+                                                            key={car.id}>
+                {car.imgUrls[0] && <img src={car.imgUrls[0].replace('mo-160', 'mo-360')}
+                                        style={{width: '360px'}}
+                                        alt=""/>}
                 <div className="details">
                     <div className="price">{moneyFormat(car.price, 0, 0)}</div>
                     <span className="title">{car.title}</span>
