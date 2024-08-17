@@ -157,7 +157,17 @@ const CarsListPage = () => {
 
     const clearFilters = () => {
         Array.from(searchParams.keys()).forEach(key => searchParams.delete(key));
-        setSearchParams(searchParams)
+        setSearchParams(searchParams);
+        setParams({
+            _pwFrom: pwFrom || '',
+            _pwTo: pwTo || '',
+            _priceFrom: priceFrom || '',
+            _priceTo: priceTo || '',
+            _mileageFrom: mileageFrom || '',
+            _mileageTo: mileageTo || '',
+            _yearFrom: yearFrom || '',
+            _yearTo: yearTo || ''
+        })
     }
 
     const [{_pwFrom, _pwTo, _priceFrom, _priceTo, _mileageFrom, _mileageTo, _yearFrom, _yearTo}, setParams] = useState({
