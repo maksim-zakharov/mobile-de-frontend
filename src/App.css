@@ -22,6 +22,8 @@
     color: #1c212899;
     font-size: 13px;
     line-height: 16px;
+    font-weight: 400;
+    margin-bottom: 2px;
   }
 
   .title{
@@ -42,6 +44,7 @@
     align-items: center;
     color: #333;
     margin-bottom: 2px;
+    gap: 8px;
   }
 }
 

@@ -1,4 +1,4 @@
-import {Button, Drawer, Select, SelectProps, Space, Spin} from "antd";
+import {Button, Drawer, SelectProps, Space, Spin} from "antd";
 import {LeftOutlined} from "@ant-design/icons";
 import React, {FC, useCallback, useEffect, useMemo, useState} from "react";
 import {useNavigate, useSearchParams} from "react-router-dom";
@@ -98,7 +98,9 @@ const CarsListPage = () => {
         userId
     });
     const {data: brandsData, isLoading: isBrandsLoading} = useGetBrandsQuery({});
-    const {data: modelsData, isLoading: isModelsLoading} = useGetModelsQuery({brand});
+    const {data: modelsData, isLoading: isModelsLoading} = useGetModelsQuery({brand}, {
+        refetchOnMountOrArgChange: true
+    });
 
     const cars = data?.items || [];
 
@@ -344,7 +346,12 @@ const CarsListPage = () => {
                                         style={{width: '360px'}}
                                         alt=""/>}
                 <div className="details">
-                    <div className="price">{moneyFormat(car.price, 0, 0)}</div>
+                    <div className="price">
+                        <div>{moneyFormat(car.price, 0, 0)}</div>
+                        <div
+                            className="mileage">({moneyFormat(car.priceWithoutVAT, 0, 0)} без VAT)
+                        </div>
+                    </div>
                     <span className="title">{car.title}</span>
                     {/*<div className="date">{car.date}</div>*/}
                     {/*<h4>Пробег</h4>*/}
@@ -428,7 +435,8 @@ const CarsListPage = () => {
                 </Space.Compact>
                 {/*<Select placeholder="Сортировать по умолчанию" onChange={onChangeSort} options={sortOptions}/>*/}
 
-                <MobileSelect options={sortOptions('Сортировать по умолчанию')} placeholder="Сортировать по умолчанию" size="large" value={sort}
+                <MobileSelect options={sortOptions('Сортировать по умолчанию')} placeholder="Сортировать по умолчанию"
+                              size="large" value={sort}
                               className="full-width" onChange={onChangeSort}/>
                 <Button type="primary" loading={isCountFetching} onClick={acceptPrice} size="large">
                     Показать {shortNumberFormat(showCount)} предложений
