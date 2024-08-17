@@ -1,6 +1,6 @@
-import {Button, Drawer, InputNumber, Select, Space, Spin} from "antd";
+import {Button, Drawer, InputNumber, Select, SelectProps, Space, Spin} from "antd";
 import {LeftOutlined} from "@ant-design/icons";
-import React, {useEffect, useMemo, useState} from "react";
+import React, {FC, useEffect, useId, useMemo, useState} from "react";
 import {useNavigate, useSearchParams} from "react-router-dom";
 import {useGetBrandsQuery, useGetCarsCountQuery, useGetCarsQuery, useGetModelsQuery} from "../api.tsx";
 
@@ -18,6 +18,19 @@ export const shortNumberFormat = (number: number, minimumFractionDigits = undefi
         minimumFractionDigits,
         maximumFractionDigits,
     }).format(number || 0);
+
+const MobileSelect: FC<SelectProps> = (props) => {
+
+    const id = useId();
+    return <>
+        <label htmlFor={id} className={props.className}>
+            <Select {...props}/>
+            <select hidden id={id}>
+                {props.options?.map(opt => <option value={opt.value}>{opt.label}</option>)}
+            </select>
+        </label>
+    </>
+}
 
 const t = (str: string | null) => {
     if (!str) {
@@ -229,6 +242,15 @@ const CarsListPage = () => {
         setSearchParams(searchParams)
     }
 
+    const mileageOptions = useMemo(() => Array.apply(null,{length: 20}).map((val, i) => {
+        const v = (i + 1) * 10000;
+
+        return {
+            value: v,
+            label: shortNumberFormat(v)
+        }
+    }), []);
+
     return <>
         <div className="car-item-container">
             {/*<List data={combineResult} styles={virtualListStyles} height={500} itemHeight={314} itemKey="id">*/}
@@ -286,21 +308,25 @@ const CarsListPage = () => {
                         Марка, модель
                     </Button>
                     <Space.Compact size="large">
-                        <InputNumber type="number" placeholder="Цена от" size="middle" value={_priceFrom}
+                        <InputNumber type="phone" placeholder="Цена от" size="middle" value={_priceFrom}
                                      className="full-width"
                                      onChange={onChangeParams('_priceFrom')}/>
-                        <InputNumber type="number" placeholder="Цена до" size="middle" value={_priceTo}
+                        <InputNumber type="phone" placeholder="Цена до" size="middle" value={_priceTo}
                                      className="full-width"
                                      onChange={onChangeParams('_priceTo')}/>
                     </Space.Compact>
                 </Space>
                 <Space.Compact size="large">
-                    <InputNumber type="number" placeholder="Пробег от" size="middle" value={_mileageFrom}
-                                 className="full-width"
-                                 onChange={onChangeParams('_mileageFrom')}/>
-                    <InputNumber type="number" placeholder="Пробег до" size="middle" value={_mileageTo}
-                                 className="full-width"
-                                 onChange={onChangeParams('_mileageTo')}/>
+                    <MobileSelect options={mileageOptions} placeholder="Пробег от" size="middle" value={_mileageFrom}
+                            className="full-width" onChange={onChangeParams('_mileageFrom')}/>
+                    <MobileSelect options={mileageOptions} placeholder="Пробег до" size="middle" value={_mileageTo}
+                                  className="full-width" onChange={onChangeParams('_mileageTo')}/>
+                    {/*<InputNumber type="number" placeholder="Пробег от" size="middle" value={_mileageFrom}*/}
+                    {/*             className="full-width"*/}
+                    {/*             onChange={onChangeParams('_mileageFrom')}/>*/}
+                    {/*<InputNumber type="number" placeholder="Пробег до" size="middle" value={_mileageTo}*/}
+                    {/*             className="full-width"*/}
+                    {/*             onChange={onChangeParams('_mileageTo')}/>*/}
                 </Space.Compact>
                 <Space.Compact size="large">
                     <InputNumber type="number" placeholder="Мощность л.с. от" size="middle" value={_pwFrom}
