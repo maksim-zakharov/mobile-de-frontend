@@ -101,6 +101,7 @@ const CarsListPage = () => {
     };
 
     const clearModel = () => {
+        setCombineResult([]);
         searchParams.set('drawer', 'brand');
         searchParams.delete('model');
         setSearchParams(searchParams);
@@ -108,6 +109,7 @@ const CarsListPage = () => {
     }
 
     const onSelectBrand = (brandKey: string) => {
+        setCombineResult([]);
         searchParams.set('page', '1');
         searchParams.set('brand', brandKey);
         searchParams.set('drawer', 'model');
@@ -116,6 +118,7 @@ const CarsListPage = () => {
     }
 
     const onSelectModel = (brandKey: string) => {
+        setCombineResult([]);
         searchParams.set('page', '1');
         searchParams.set('model', brandKey);
         searchParams.delete('drawer');
