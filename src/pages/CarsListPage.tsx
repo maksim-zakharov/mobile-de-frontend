@@ -1,6 +1,6 @@
 import {Button, Drawer, InputNumber, Select, SelectProps, Space, Spin} from "antd";
 import {LeftOutlined} from "@ant-design/icons";
-import React, {FC, useEffect, useId, useMemo, useState} from "react";
+import React, {createRef, FC, useEffect, useId, useMemo, useState} from "react";
 import {useNavigate, useSearchParams} from "react-router-dom";
 import {useGetBrandsQuery, useGetCarsCountQuery, useGetCarsQuery, useGetModelsQuery} from "../api.tsx";
 
@@ -21,14 +21,16 @@ export const shortNumberFormat = (number: number, minimumFractionDigits = undefi
 
 const MobileSelect: FC<SelectProps> = (props) => {
 
-    const id = useId();
+    const ref = createRef();
+
+    const onFocus = () => {
+        ref.current?.focus();
+    };
     return <>
-        <label htmlFor={id} className={props.className}>
-            <Select {...props}/>
-            <select hidden id={id}>
-                {props.options?.map(opt => <option value={opt.value}>{opt.label}</option>)}
-            </select>
-        </label>
+        <Select {...props} onFocus={onFocus}/>
+        <select hidden ref={ref}>
+            {props.options?.map(opt => <option value={opt.value}>{opt.label}</option>)}
+        </select>
     </>
 }
 
