@@ -349,9 +349,9 @@ const CarsListPage = () => {
                     {/*<InputNumber type="phone" placeholder="Цена до" size="large" value={_priceTo}*/}
                     {/*             className="full-width"*/}
                     {/*             onChange={onChangeParams('_priceTo')}/>*/}
-                    <MobileSelect options={priceOptions('Год от')} placeholder="Цена от" size="large" value={_priceFrom}
+                    <MobileSelect options={priceOptions('Цена от')} placeholder="Цена от" size="large" value={_priceFrom}
                                   className="full-width" onChange={onChangeParams('_priceFrom')}/>
-                    <MobileSelect options={priceOptions('Год до')} placeholder="Цена до" size="large" value={_priceTo}
+                    <MobileSelect options={priceOptions('Цена до')} placeholder="Цена до" size="large" value={_priceTo}
                                   className="full-width" onChange={onChangeParams('_priceTo')}/>
                 </Space.Compact>
                 <Space.Compact size="large">
