@@ -44,6 +44,8 @@ const CarsListPage = () => {
     const drawer = searchParams.get('drawer');
     const priceFrom = searchParams.get('priceFrom');
     const priceTo = searchParams.get('priceTo');
+    const pwFrom = searchParams.get('pwFrom');
+    const pwTo = searchParams.get('pwTo');
     const mileageFrom = searchParams.get('mileageFrom');
     const mileageTo = searchParams.get('mileageTo');
     const yearFrom = searchParams.get('yearFrom');
@@ -57,7 +59,7 @@ const CarsListPage = () => {
         userId = window.Telegram.WebApp.initDataUnsafe.user?.id;
     }
 
-    const {data, isFetching: isCarLoading, refresh} = useGetCarsQuery({
+    const {data, isFetching: isCarLoading, refetch} = useGetCarsQuery({
         brand,
         model,
         priceTo,
@@ -69,6 +71,8 @@ const CarsListPage = () => {
         sort: ssort,
         order,
         page,
+        pwFrom,
+        pwTo,
         userId
     });
     const {data: brandsData, isLoading: isBrandsLoading} = useGetBrandsQuery({});
@@ -80,8 +84,9 @@ const CarsListPage = () => {
     const [combineResult, setCombineResult] = useState<[]>([]);
 
     useEffect(() => {
+        if(!isCarLoading)
         setCombineResult(prevState => prevState.concat(cars));
-    }, [resultPage]);
+    }, [isCarLoading]);
 
     const brands = brandsData || [];
     const models = useMemo(() => (modelsData || []).map(m => m.items ? m.items : [m]).flat(), [modelsData]);
@@ -105,7 +110,7 @@ const CarsListPage = () => {
         searchParams.set('drawer', 'brand');
         searchParams.delete('model');
         setSearchParams(searchParams);
-        refresh();
+        refetch();
     }
 
     const onSelectBrand = (brandKey: string) => {
@@ -114,7 +119,7 @@ const CarsListPage = () => {
         searchParams.set('brand', brandKey);
         searchParams.set('drawer', 'model');
         setSearchParams(searchParams)
-        refresh();
+        refetch();
     }
 
     const onSelectModel = (brandKey: string) => {
@@ -123,9 +128,11 @@ const CarsListPage = () => {
         searchParams.set('model', brandKey);
         searchParams.delete('drawer');
         setSearchParams(searchParams)
-        refresh();
+        refetch();
     }
-    const [{_priceFrom, _priceTo, _mileageFrom, _mileageTo, _yearFrom, _yearTo}, setParams] = useState({
+    const [{_pwFrom, _pwTo, _priceFrom, _priceTo, _mileageFrom, _mileageTo, _yearFrom, _yearTo}, setParams] = useState({
+        _pwFrom: pwFrom || '',
+        _pwTo: pwTo || '',
         _priceFrom: priceFrom || '',
         _priceTo: priceTo || '',
         _mileageFrom: mileageFrom || '',
@@ -141,6 +148,8 @@ const CarsListPage = () => {
         mileageTo: _mileageTo,
         yearFrom: _yearFrom,
         yearTo: _yearTo,
+        pwFrom: _pwFrom,
+        pwTo: _pwTo,
         brand,
         model
     })
@@ -185,6 +194,9 @@ const CarsListPage = () => {
     }
 
     const acceptPrice = () => {
+        setCombineResult([]);
+        searchParams.set('pwFrom', _pwFrom);
+        searchParams.set('pwTo', _pwTo);
         searchParams.set('priceFrom', _priceFrom);
         searchParams.set('priceTo', _priceTo);
         searchParams.set('mileageFrom', _mileageFrom);
@@ -194,6 +206,7 @@ const CarsListPage = () => {
         searchParams.set('page', '1');
         searchParams.delete('drawer');
         setSearchParams(searchParams);
+        refetch()
     }
 
     const sortOptions = [
@@ -244,7 +257,7 @@ const CarsListPage = () => {
                     <span className="title">{car.title}</span>
                     {/*<div className="date">{car.date}</div>*/}
                     {/*<h4>Пробег</h4>*/}
-                    <div className="mileage">{car.date.split('/')[1]} г., {shortNumberFormat(car.mileage)} км</div>
+                    <div className="mileage">{car.date !== 'Neuwagen' ? `${car.date.split('/')[1]} г., ${shortNumberFormat(car.mileage)} км`: 'Новый'}, {car.power} л.с.</div>
                 </div>
             </div>)}
             {isCarLoading && <Spin/>}
@@ -265,7 +278,7 @@ const CarsListPage = () => {
             placement="bottom"
             onClose={onClose}
             open={drawer === 'filters'}
-            contentWrapperStyle={{maxHeight: '300px'}}
+            contentWrapperStyle={{maxHeight: '330px'}}
         >
             <div className="filters">
                 <Space>
@@ -288,6 +301,14 @@ const CarsListPage = () => {
                     <InputNumber type="number" placeholder="Пробег до" size="middle" value={_mileageTo}
                                  className="full-width"
                                  onChange={onChangeParams('_mileageTo')}/>
+                </Space.Compact>
+                <Space.Compact size="large">
+                    <InputNumber type="number" placeholder="Мощность л.с. от" size="middle" value={_pwFrom}
+                                 className="full-width"
+                                 onChange={onChangeParams('_pwFrom')}/>
+                    <InputNumber type="number" placeholder="Мощность л.с. до" size="middle" value={_pwTo}
+                                 className="full-width"
+                                 onChange={onChangeParams('_pwTo')}/>
                 </Space.Compact>
                 <Space.Compact size="large">
                     <InputNumber type="number" placeholder="Год от" size="middle" value={_yearFrom}
