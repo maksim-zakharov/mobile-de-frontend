@@ -335,9 +335,9 @@ const CarsListPage = () => {
                     </Space.Compact>
                 </Space>
                 <Space.Compact size="large">
-                    <MobileSelect options={mileageOptions('от')} placeholder="Пробег от" size="middle" value={_mileageFrom}
+                    <MobileSelect options={mileageOptions('Пробег от')} placeholder="Пробег от" size="middle" value={_mileageFrom}
                             className="full-width" onChange={onChangeParams('_mileageFrom')}/>
-                    <MobileSelect options={mileageOptions('до')} placeholder="Пробег до" size="middle" value={_mileageTo}
+                    <MobileSelect options={mileageOptions('Пробег до')} placeholder="Пробег до" size="middle" value={_mileageTo}
                                   className="full-width" onChange={onChangeParams('_mileageTo')}/>
                     {/*<InputNumber type="number" placeholder="Пробег от" size="middle" value={_mileageFrom}*/}
                     {/*             className="full-width"*/}
@@ -347,10 +347,10 @@ const CarsListPage = () => {
                     {/*             onChange={onChangeParams('_mileageTo')}/>*/}
                 </Space.Compact>
                 <Space.Compact size="large">
-                    <MobileSelect options={powerOptions('до')} placeholder="Мощность л.с. от" size="middle" value={_pwFrom}
+                    <MobileSelect options={powerOptions('Мощность л.с. от')} placeholder="Мощность л.с. от" size="middle" value={_pwFrom}
                                  className="full-width"
                                  onChange={onChangeParams('_pwFrom')}/>
-                    <MobileSelect options={powerOptions('до')} placeholder="Мощность л.с. до" size="middle" value={_pwTo}
+                    <MobileSelect options={powerOptions('Мощность л.с. до')} placeholder="Мощность л.с. до" size="middle" value={_pwTo}
                                  className="full-width"
                                  onChange={onChangeParams('_pwTo')}/>
                 </Space.Compact>
