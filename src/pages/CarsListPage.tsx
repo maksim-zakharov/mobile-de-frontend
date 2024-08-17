@@ -57,7 +57,7 @@ const CarsListPage = () => {
         userId = window.Telegram.WebApp.initDataUnsafe.user?.id;
     }
 
-    const {data, isFetching: isCarLoading} = useGetCarsQuery({
+    const {data, isFetching: isCarLoading, refresh} = useGetCarsQuery({
         brand,
         model,
         priceTo,
@@ -103,7 +103,8 @@ const CarsListPage = () => {
     const clearModel = () => {
         searchParams.set('drawer', 'brand');
         searchParams.delete('model');
-        setSearchParams(searchParams)
+        setSearchParams(searchParams);
+        refresh();
     }
 
     const onSelectBrand = (brandKey: string) => {
@@ -111,6 +112,7 @@ const CarsListPage = () => {
         searchParams.set('brand', brandKey);
         searchParams.set('drawer', 'model');
         setSearchParams(searchParams)
+        refresh();
     }
 
     const onSelectModel = (brandKey: string) => {
@@ -118,6 +120,7 @@ const CarsListPage = () => {
         searchParams.set('model', brandKey);
         searchParams.delete('drawer');
         setSearchParams(searchParams)
+        refresh();
     }
     const [{_priceFrom, _priceTo, _mileageFrom, _mileageTo, _yearFrom, _yearTo}, setParams] = useState({
         _priceFrom: priceFrom || '',
