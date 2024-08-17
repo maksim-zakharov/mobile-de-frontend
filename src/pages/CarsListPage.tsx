@@ -1,16 +1,8 @@
-import {Button, Carousel, Drawer, InputNumber, Select, Space, Spin} from "antd";
+import {Button, Drawer, InputNumber, Select, Space, Spin} from "antd";
 import {LeftOutlined} from "@ant-design/icons";
 import React, {useEffect, useMemo, useState} from "react";
-import List from 'rc-virtual-list';
 import {useNavigate, useSearchParams} from "react-router-dom";
-import {
-    useGetBrandsQuery,
-    useGetCarByIdQuery,
-    useGetCarsCountQuery,
-    useGetCarsQuery,
-    useGetModelsQuery
-} from "../api.tsx";
-import {virtualListStyles} from "../utils.ts";
+import {useGetBrandsQuery, useGetCarsCountQuery, useGetCarsQuery, useGetModelsQuery} from "../api.tsx";
 
 export const moneyFormat = (money: number, maximumFractionDigits = undefined, minimumFractionDigits = undefined) =>
     new Intl.NumberFormat('ru-RU', {
@@ -28,7 +20,7 @@ export const shortNumberFormat = (number: number, minimumFractionDigits = undefi
     }).format(number || 0);
 
 const t = (str: string | null) => {
-    if(!str){
+    if (!str) {
         return {
             sort: undefined,
             order: undefined,
@@ -61,11 +53,24 @@ const CarsListPage = () => {
     const {sort: ssort, order} = t(sort);
 
     let userId = searchParams.get('userId');
-    if(window.Telegram?.WebApp?.initDataUnsafe){
+    if (window.Telegram?.WebApp?.initDataUnsafe) {
         userId = window.Telegram.WebApp.initDataUnsafe.user?.id;
     }
 
-    const {data, isFetching: isCarLoading } = useGetCarsQuery({brand, model, priceTo, priceFrom, mileageFrom, mileageTo, yearFrom, yearTo, sort: ssort, order, page, userId});
+    const {data, isFetching: isCarLoading} = useGetCarsQuery({
+        brand,
+        model,
+        priceTo,
+        priceFrom,
+        mileageFrom,
+        mileageTo,
+        yearFrom,
+        yearTo,
+        sort: ssort,
+        order,
+        page,
+        userId
+    });
     const {data: brandsData, isLoading: isBrandsLoading} = useGetBrandsQuery({});
     const {data: modelsData, isLoading: isModelsLoading} = useGetModelsQuery({brand});
 
@@ -104,12 +109,14 @@ const CarsListPage = () => {
     const onSelectBrand = (brandKey: string) => {
         searchParams.set('brand', brandKey);
         searchParams.set('drawer', 'model');
+        setCombineResult([]);
         setSearchParams(searchParams)
     }
 
     const onSelectModel = (brandKey: string) => {
         searchParams.set('model', brandKey);
         searchParams.delete('drawer');
+        setCombineResult([]);
         setSearchParams(searchParams)
     }
     const [{_priceFrom, _priceTo, _mileageFrom, _mileageTo, _yearFrom, _yearTo}, setParams] = useState({
@@ -122,7 +129,14 @@ const CarsListPage = () => {
     })
 
     const {data: countData} = useGetCarsCountQuery({
-        priceFrom: _priceFrom, priceTo: _priceTo, mileageFrom: _mileageFrom, mileageTo: _mileageTo, yearFrom: _yearFrom, yearTo: _yearTo, brand, model
+        priceFrom: _priceFrom,
+        priceTo: _priceTo,
+        mileageFrom: _mileageFrom,
+        mileageTo: _mileageTo,
+        yearFrom: _yearFrom,
+        yearTo: _yearTo,
+        brand,
+        model
     })
 
     const docElements = document.getElementsByClassName("car-item-container");
@@ -171,7 +185,10 @@ const CarsListPage = () => {
         searchParams.set('mileageTo', _mileageTo);
         searchParams.set('yearFrom', _yearFrom);
         searchParams.set('yearTo', _yearTo);
-        setSearchParams(searchParams)
+        searchParams.set('page', '1');
+        searchParams.delete('drawer');
+        setSearchParams(searchParams);
+        setCombineResult([]);
     }
 
     const sortOptions = [
@@ -184,41 +201,17 @@ const CarsListPage = () => {
         {label: 'Год по возрастанию', value: 'sort=fr&order=asc'},
     ]
 
+    const openFilters = () => {
+        searchParams.set('drawer', 'filters');
+        setSearchParams(searchParams)
+    }
+
     const onChangeSort = (value: string) => {
         searchParams.set('sort', value);
         setSearchParams(searchParams)
     }
 
-return <>
-        <div className="filters">
-            <Space>
-                <Button onClick={showDrawer}>
-                    Марка, модель
-                </Button>
-                <Space.Compact size="large">
-                    <InputNumber type="number" placeholder="Цена от" size="middle" value={_priceFrom} className="full-width"
-                                 onChange={onChangeParams('_priceFrom')}/>
-                    <InputNumber type="number" placeholder="Цена до" size="middle" value={_priceTo} className="full-width"
-                                 onChange={onChangeParams('_priceTo')}/>
-                </Space.Compact>
-            </Space>
-            <Space.Compact size="large">
-                <InputNumber type="number" placeholder="Пробег от" size="middle" value={_mileageFrom} className="full-width"
-                             onChange={onChangeParams('_mileageFrom')}/>
-                <InputNumber type="number" placeholder="Пробег до" size="middle" value={_mileageTo} className="full-width"
-                             onChange={onChangeParams('_mileageTo')}/>
-            </Space.Compact>
-            <Space.Compact size="large">
-                <InputNumber type="number" placeholder="Год от" size="middle" value={_yearFrom} className="full-width"
-                             onChange={onChangeParams('_yearFrom')}/>
-                <InputNumber type="number" placeholder="Год до" size="middle" value={_yearTo} className="full-width"
-                             onChange={onChangeParams('_yearTo')}/>
-            </Space.Compact>
-            <Select placeholder="Сортировать по умолчанию" onChange={onChangeSort} options={sortOptions}/>
-            <Button type="primary" onClick={acceptPrice}>
-                Показать {showCount} предложений
-            </Button>
-        </div>
+    return <>
         <div className="car-item-container">
             {/*<List data={combineResult} styles={virtualListStyles} height={500} itemHeight={314} itemKey="id">*/}
             {/*    {(car =>*/}
@@ -237,7 +230,7 @@ return <>
             {/*        </div>)}*/}
             {/*</List>*/}
             {combineResult.map(car => <div onClick={() => onSelectCar(car.id)} className="car-item"
-                                                            key={car.id}>
+                                           key={car.id}>
                 {car.imgUrls[0] && <img src={car.imgUrls[0].replace('mo-160', 'mo-360')}
                                         style={{width: '360px'}}
                                         alt=""/>}
@@ -249,8 +242,61 @@ return <>
                     <div className="mileage">{car.date.split('/')[1]} г., {shortNumberFormat(car.mileage)} км</div>
                 </div>
             </div>)}
-            {isCarLoading && <Spin />}
+            {isCarLoading && <Spin/>}
         </div>
+        <div style={{
+            width: '100%',
+            position: 'fixed',
+            bottom: 16,
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center'
+        }}>
+            <Button type="primary" size="large" onClick={openFilters}
+                    style={{margin: 'auto'}}>Найдено {showCount} предложений</Button>
+        </div>
+        <Drawer
+            title="Фильтры"
+            placement="bottom"
+            onClose={onClose}
+            open={drawer === 'filters'}
+            contentWrapperStyle={{maxHeight: '300px'}}
+        >
+            <div className="filters">
+                <Space>
+                    <Button onClick={showDrawer}>
+                        Марка, модель
+                    </Button>
+                    <Space.Compact size="large">
+                        <InputNumber type="number" placeholder="Цена от" size="middle" value={_priceFrom}
+                                     className="full-width"
+                                     onChange={onChangeParams('_priceFrom')}/>
+                        <InputNumber type="number" placeholder="Цена до" size="middle" value={_priceTo}
+                                     className="full-width"
+                                     onChange={onChangeParams('_priceTo')}/>
+                    </Space.Compact>
+                </Space>
+                <Space.Compact size="large">
+                    <InputNumber type="number" placeholder="Пробег от" size="middle" value={_mileageFrom}
+                                 className="full-width"
+                                 onChange={onChangeParams('_mileageFrom')}/>
+                    <InputNumber type="number" placeholder="Пробег до" size="middle" value={_mileageTo}
+                                 className="full-width"
+                                 onChange={onChangeParams('_mileageTo')}/>
+                </Space.Compact>
+                <Space.Compact size="large">
+                    <InputNumber type="number" placeholder="Год от" size="middle" value={_yearFrom}
+                                 className="full-width"
+                                 onChange={onChangeParams('_yearFrom')}/>
+                    <InputNumber type="number" placeholder="Год до" size="middle" value={_yearTo} className="full-width"
+                                 onChange={onChangeParams('_yearTo')}/>
+                </Space.Compact>
+                <Select placeholder="Сортировать по умолчанию" onChange={onChangeSort} options={sortOptions}/>
+                <Button type="primary" onClick={acceptPrice}>
+                    Показать {showCount} предложений
+                </Button>
+            </div>
+        </Drawer>
         <Drawer
             title="Марки"
             placement="bottom"
