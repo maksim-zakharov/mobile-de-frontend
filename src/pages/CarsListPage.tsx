@@ -368,7 +368,7 @@ const CarsListPage = () => {
             placement="bottom"
             onClose={onClose}
             open={drawer === 'filters'}
-            contentWrapperStyle={{maxHeight: '400px'}}
+            contentWrapperStyle={{maxHeight: '440px'}}
             extra={<Button onClick={clearFilters} style={{padding: 0}} type="link">Сбросить</Button>}
         >
             <div className="filters">
