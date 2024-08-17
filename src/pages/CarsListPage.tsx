@@ -134,7 +134,7 @@ const CarsListPage = () => {
         _yearTo: yearTo || ''
     })
 
-    const {data: countData} = useGetCarsCountQuery({
+    const {data: countData, isFetching: isCountFetching} = useGetCarsCountQuery({
         priceFrom: _priceFrom,
         priceTo: _priceTo,
         mileageFrom: _mileageFrom,
@@ -257,7 +257,7 @@ const CarsListPage = () => {
             justifyContent: 'center',
             alignItems: 'center'
         }}>
-            <Button type="primary" size="large" onClick={openFilters}
+            <Button type="primary" size="large" loading={isCountFetching} onClick={openFilters}
                     style={{margin: 'auto'}}>Найдено {showCount} предложений</Button>
         </div>
         <Drawer
@@ -297,7 +297,7 @@ const CarsListPage = () => {
                                  onChange={onChangeParams('_yearTo')}/>
                 </Space.Compact>
                 <Select placeholder="Сортировать по умолчанию" onChange={onChangeSort} options={sortOptions}/>
-                <Button type="primary" onClick={acceptPrice}>
+                <Button type="primary" loading={isCountFetching} onClick={acceptPrice}>
                     Показать {showCount} предложений
                 </Button>
             </div>
