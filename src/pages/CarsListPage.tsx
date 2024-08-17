@@ -249,16 +249,6 @@ const CarsListPage = () => {
         refetch()
     }
 
-    const sortOptions = [
-        {label: 'По умолчанию', value: 'sort=rel&order=asc'},
-        {label: 'Цена по убыванию', value: 'sort=p&order=desc'},
-        {label: 'Цена по возрастанию', value: 'sort=p&order=asc'},
-        {label: 'Пробег по убыванию', value: 'sort=ml&order=desc'},
-        {label: 'Пробег по возрастанию', value: 'sort=ml&order=asc'},
-        {label: 'Год по убыванию', value: 'sort=fr&order=desc'},
-        {label: 'Год по возрастанию', value: 'sort=fr&order=asc'},
-    ]
-
     const openFilters = () => {
         searchParams.set('drawer', 'filters');
         setSearchParams(searchParams)
@@ -268,6 +258,19 @@ const CarsListPage = () => {
         searchParams.set('sort', value);
         setSearchParams(searchParams)
     }
+
+    const sortOptions = useCallback((label: string) => [{
+        label,
+        value: ''
+    }, ...[
+        {label: 'По умолчанию', value: 'sort=rel&order=asc'},
+        {label: 'Цена по убыванию', value: 'sort=p&order=desc'},
+        {label: 'Цена по возрастанию', value: 'sort=p&order=asc'},
+        {label: 'Пробег по убыванию', value: 'sort=ml&order=desc'},
+        {label: 'Пробег по возрастанию', value: 'sort=ml&order=asc'},
+        {label: 'Год по убыванию', value: 'sort=fr&order=desc'},
+        {label: 'Год по возрастанию', value: 'sort=fr&order=asc'},
+    ]], [])
 
     const priceOptions = useCallback((label: string) => [{
         label,
@@ -423,7 +426,10 @@ const CarsListPage = () => {
                     {/*<InputNumber type="number" placeholder="Год до" size="large" value={_yearTo} className="full-width"*/}
                     {/*             onChange={onChangeParams('_yearTo')}/>*/}
                 </Space.Compact>
-                <Select placeholder="Сортировать по умолчанию" onChange={onChangeSort} options={sortOptions}/>
+                {/*<Select placeholder="Сортировать по умолчанию" onChange={onChangeSort} options={sortOptions}/>*/}
+
+                <MobileSelect options={sortOptions('Сортировать по умолчанию')} placeholder="Сортировать по умолчанию" size="large" value={_yearTo}
+                              className="full-width" onChange={onChangeSort}/>
                 <Button type="primary" loading={isCountFetching} onClick={acceptPrice} size="large">
                     Показать {shortNumberFormat(showCount)} предложений
                 </Button>
