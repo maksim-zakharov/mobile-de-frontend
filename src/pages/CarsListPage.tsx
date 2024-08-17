@@ -428,7 +428,7 @@ const CarsListPage = () => {
                 </Space.Compact>
                 {/*<Select placeholder="Сортировать по умолчанию" onChange={onChangeSort} options={sortOptions}/>*/}
 
-                <MobileSelect options={sortOptions('Сортировать по умолчанию')} placeholder="Сортировать по умолчанию" size="large" value={_yearTo}
+                <MobileSelect options={sortOptions('Сортировать по умолчанию')} placeholder="Сортировать по умолчанию" size="large" value={sort}
                               className="full-width" onChange={onChangeSort}/>
                 <Button type="primary" loading={isCountFetching} onClick={acceptPrice} size="large">
                     Показать {shortNumberFormat(showCount)} предложений
