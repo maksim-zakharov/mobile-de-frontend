@@ -107,16 +107,16 @@ const CarsListPage = () => {
     }
 
     const onSelectBrand = (brandKey: string) => {
+        setCombineResult([]);
         searchParams.set('brand', brandKey);
         searchParams.set('drawer', 'model');
-        setCombineResult([]);
         setSearchParams(searchParams)
     }
 
     const onSelectModel = (brandKey: string) => {
+        setCombineResult([]);
         searchParams.set('model', brandKey);
         searchParams.delete('drawer');
-        setCombineResult([]);
         setSearchParams(searchParams)
     }
     const [{_priceFrom, _priceTo, _mileageFrom, _mileageTo, _yearFrom, _yearTo}, setParams] = useState({
@@ -179,6 +179,7 @@ const CarsListPage = () => {
     }
 
     const acceptPrice = () => {
+        setCombineResult([]);
         searchParams.set('priceFrom', _priceFrom);
         searchParams.set('priceTo', _priceTo);
         searchParams.set('mileageFrom', _mileageFrom);
@@ -188,7 +189,6 @@ const CarsListPage = () => {
         searchParams.set('page', '1');
         searchParams.delete('drawer');
         setSearchParams(searchParams);
-        setCombineResult([]);
     }
 
     const sortOptions = [
