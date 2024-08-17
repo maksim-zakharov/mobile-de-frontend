@@ -1,6 +1,6 @@
-import {Button, Drawer, Input, InputNumber, Select, SelectProps, Space, Spin} from "antd";
+import {Button, Drawer, Select, SelectProps, Space, Spin} from "antd";
 import {LeftOutlined} from "@ant-design/icons";
-import React, {createRef, FC, useCallback, useEffect, useId, useMemo, useState} from "react";
+import React, {FC, useCallback, useEffect, useMemo, useState} from "react";
 import {useNavigate, useSearchParams} from "react-router-dom";
 import {useGetBrandsQuery, useGetCarsCountQuery, useGetCarsQuery, useGetModelsQuery} from "../api.tsx";
 
@@ -101,17 +101,19 @@ const CarsListPage = () => {
     const {data: modelsData, isLoading: isModelsLoading} = useGetModelsQuery({brand});
 
     const cars = data?.items || [];
-    const resultPage = data?.page || 0;
 
     const [combineResult, setCombineResult] = useState<[]>([]);
 
     useEffect(() => {
-        if(!isCarLoading)
-        setCombineResult(prevState => prevState.concat(cars));
+        if (!isCarLoading)
+            setCombineResult(prevState => prevState.concat(cars));
     }, [isCarLoading]);
 
     const brands = brandsData || [];
     const models = useMemo(() => (modelsData || []).map(m => m.items ? m.items : [m]).flat(), [modelsData]);
+
+    const selectedBrand = useMemo(() => brands.find(b => b.value === brand), [brand, brands])
+    const selectedModel = useMemo(() => models.find(b => b.value === model), [model, models])
 
     const showDrawer = () => {
         searchParams.set('drawer', brand ? 'model' : 'brand');
@@ -148,10 +150,16 @@ const CarsListPage = () => {
         setCombineResult([]);
         searchParams.set('page', '1');
         searchParams.set('model', brandKey);
-        searchParams.delete('drawer');
+        searchParams.set('drawer', 'filters');
         setSearchParams(searchParams)
         refetch();
     }
+
+    const clearFilters = () => {
+        Array.from(searchParams.keys()).forEach(key => searchParams.delete(key));
+        setSearchParams(searchParams)
+    }
+
     const [{_pwFrom, _pwTo, _priceFrom, _priceTo, _mileageFrom, _mileageTo, _yearFrom, _yearTo}, setParams] = useState({
         _pwFrom: pwFrom || '',
         _pwTo: pwTo || '',
@@ -251,7 +259,10 @@ const CarsListPage = () => {
         setSearchParams(searchParams)
     }
 
-    const priceOptions = useCallback((label: string) => [{label, value: ''}, ...Array.apply(null,{length: 400}).map((val, i) => {
+    const priceOptions = useCallback((label: string) => [{
+        label,
+        value: ''
+    }, ...Array.apply(null, {length: 400}).map((val, i) => {
         const v = (i + 1) * 100000;
 
         return {
@@ -260,7 +271,10 @@ const CarsListPage = () => {
         }
     })], []);
 
-    const yearsOptions = useCallback((label: string) => [{label, value: ''}, ...Array.apply(null,{length: 40}).map((val, i) => {
+    const yearsOptions = useCallback((label: string) => [{
+        label,
+        value: ''
+    }, ...Array.apply(null, {length: 40}).map((val, i) => {
         const v = new Date().getFullYear() - i;
 
         return {
@@ -269,7 +283,10 @@ const CarsListPage = () => {
         }
     })], []);
 
-    const mileageOptions = useCallback((label: string) => [{label, value: ''}, ...Array.apply(null,{length: 20}).map((val, i) => {
+    const mileageOptions = useCallback((label: string) => [{
+        label,
+        value: ''
+    }, ...Array.apply(null, {length: 20}).map((val, i) => {
         const v = (i + 1) * 10000;
 
         return {
@@ -278,7 +295,10 @@ const CarsListPage = () => {
         }
     })], []);
 
-    const powerOptions = useCallback((label: string) => [{label, value: undefined}, ...Array.apply(null,{length: 200}).map((val, i) => {
+    const powerOptions = useCallback((label: string) => [{
+        label,
+        value: undefined
+    }, ...Array.apply(null, {length: 200}).map((val, i) => {
         const v = (i + 1) * 10;
 
         return {
@@ -315,7 +335,9 @@ const CarsListPage = () => {
                     <span className="title">{car.title}</span>
                     {/*<div className="date">{car.date}</div>*/}
                     {/*<h4>Пробег</h4>*/}
-                    <div className="mileage">{car.date !== 'Neuwagen' ? `${car.date.split('/')[1]} г., ${shortNumberFormat(car.mileage)} км`: 'Новый'}, {car.power} л.с.</div>
+                    <div
+                        className="mileage">{car.date !== 'Neuwagen' ? `${car.date.split('/')[1]} г., ${shortNumberFormat(car.mileage)} км` : 'Новый'}, {car.power} л.с.
+                    </div>
                 </div>
             </div>)}
             {isCarLoading && <Spin/>}
@@ -337,10 +359,11 @@ const CarsListPage = () => {
             onClose={onClose}
             open={drawer === 'filters'}
             contentWrapperStyle={{maxHeight: '400px'}}
+            extra={<Button onClick={clearFilters} style={{padding: 0}} type="link">Сбросить</Button>}
         >
             <div className="filters">
-                <Button onClick={showDrawer} size="large" >
-                    Марка, модель
+                <Button onClick={showDrawer} size="large">
+                    {selectedBrand?.label || 'Марка'}, {selectedModel?.label || 'модель'}
                 </Button>
                 <Space.Compact size="large">
                     {/*<InputNumber type="phone" placeholder="Цена от" size="large" value={_priceFrom}*/}
@@ -349,15 +372,18 @@ const CarsListPage = () => {
                     {/*<InputNumber type="phone" placeholder="Цена до" size="large" value={_priceTo}*/}
                     {/*             className="full-width"*/}
                     {/*             onChange={onChangeParams('_priceTo')}/>*/}
-                    <MobileSelect options={priceOptions('Цена от')} placeholder="Цена от" size="large" value={_priceFrom}
+                    <MobileSelect options={priceOptions('Цена от')} placeholder="Цена от" size="large"
+                                  value={_priceFrom}
                                   className="full-width" onChange={onChangeParams('_priceFrom')}/>
                     <MobileSelect options={priceOptions('Цена до')} placeholder="Цена до" size="large" value={_priceTo}
                                   className="full-width" onChange={onChangeParams('_priceTo')}/>
                 </Space.Compact>
                 <Space.Compact size="large">
-                    <MobileSelect options={mileageOptions('Пробег от')} placeholder="Пробег от" size="large" value={_mileageFrom}
-                            className="full-width" onChange={onChangeParams('_mileageFrom')}/>
-                    <MobileSelect options={mileageOptions('Пробег до')} placeholder="Пробег до" size="large" value={_mileageTo}
+                    <MobileSelect options={mileageOptions('Пробег от')} placeholder="Пробег от" size="large"
+                                  value={_mileageFrom}
+                                  className="full-width" onChange={onChangeParams('_mileageFrom')}/>
+                    <MobileSelect options={mileageOptions('Пробег до')} placeholder="Пробег до" size="large"
+                                  value={_mileageTo}
                                   className="full-width" onChange={onChangeParams('_mileageTo')}/>
                     {/*<InputNumber type="number" placeholder="Пробег от" size="middle" value={_mileageFrom}*/}
                     {/*             className="full-width"*/}
@@ -367,12 +393,14 @@ const CarsListPage = () => {
                     {/*             onChange={onChangeParams('_mileageTo')}/>*/}
                 </Space.Compact>
                 <Space.Compact size="large">
-                    <MobileSelect options={powerOptions('Мощность л.с. от')} placeholder="Мощность л.с. от" size="large" value={_pwFrom}
-                                 className="full-width"
-                                 onChange={onChangeParams('_pwFrom')}/>
-                    <MobileSelect options={powerOptions('Мощность л.с. до')} placeholder="Мощность л.с. до" size="large" value={_pwTo}
-                                 className="full-width"
-                                 onChange={onChangeParams('_pwTo')}/>
+                    <MobileSelect options={powerOptions('Мощность л.с. от')} placeholder="Мощность л.с. от" size="large"
+                                  value={_pwFrom}
+                                  className="full-width"
+                                  onChange={onChangeParams('_pwFrom')}/>
+                    <MobileSelect options={powerOptions('Мощность л.с. до')} placeholder="Мощность л.с. до" size="large"
+                                  value={_pwTo}
+                                  className="full-width"
+                                  onChange={onChangeParams('_pwTo')}/>
                 </Space.Compact>
                 <Space.Compact size="large">
                     <MobileSelect options={yearsOptions('Год от')} placeholder="Год от" size="large" value={_yearFrom}
