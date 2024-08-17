@@ -1,6 +1,6 @@
-import {Button, Drawer, InputNumber, Select, SelectProps, Space, Spin} from "antd";
+import {Button, Drawer, Input, InputNumber, Select, SelectProps, Space, Spin} from "antd";
 import {LeftOutlined} from "@ant-design/icons";
-import React, {createRef, FC, useEffect, useId, useMemo, useState} from "react";
+import React, {createRef, FC, useCallback, useEffect, useId, useMemo, useState} from "react";
 import {useNavigate, useSearchParams} from "react-router-dom";
 import {useGetBrandsQuery, useGetCarsCountQuery, useGetCarsQuery, useGetModelsQuery} from "../api.tsx";
 
@@ -21,14 +21,20 @@ export const shortNumberFormat = (number: number, minimumFractionDigits = undefi
 
 const MobileSelect: FC<SelectProps> = (props) => {
 
-    const ref = createRef();
+    // const id = useId();
+    // const ref = createRef();
+    // const onFocus = (e) => {
+    //     e.preventDefault();
+    //     e.stopPropagation();
+    //     ref?.current?.focus();
+    // }
 
-    const onFocus = () => {
-        ref.current?.focus();
-    };
     return <>
-        <Select {...props} onFocus={onFocus}/>
-        <select hidden ref={ref}>
+        <select
+            // id={id}
+            // ref={ref}
+            // hidden
+            className="ant-input ant-input-outlined full-width ant-input-compact-item">
             {props.options?.map(opt => <option value={opt.value}>{opt.label}</option>)}
         </select>
     </>
@@ -244,14 +250,14 @@ const CarsListPage = () => {
         setSearchParams(searchParams)
     }
 
-    const mileageOptions = useMemo(() => Array.apply(null,{length: 20}).map((val, i) => {
+    const mileageOptions = useCallback((label: string) => [{label, value: undefined}, ...Array.apply(null,{length: 20}).map((val, i) => {
         const v = (i + 1) * 10000;
 
         return {
             value: v,
             label: shortNumberFormat(v)
         }
-    }), []);
+    })], []);
 
     return <>
         <div className="car-item-container">
@@ -319,9 +325,9 @@ const CarsListPage = () => {
                     </Space.Compact>
                 </Space>
                 <Space.Compact size="large">
-                    <MobileSelect options={mileageOptions} placeholder="Пробег от" size="middle" value={_mileageFrom}
+                    <MobileSelect options={mileageOptions('от')} placeholder="Пробег от" size="middle" value={_mileageFrom}
                             className="full-width" onChange={onChangeParams('_mileageFrom')}/>
-                    <MobileSelect options={mileageOptions} placeholder="Пробег до" size="middle" value={_mileageTo}
+                    <MobileSelect options={mileageOptions('до')} placeholder="Пробег до" size="middle" value={_mileageTo}
                                   className="full-width" onChange={onChangeParams('_mileageTo')}/>
                     {/*<InputNumber type="number" placeholder="Пробег от" size="middle" value={_mileageFrom}*/}
                     {/*             className="full-width"*/}
@@ -331,7 +337,7 @@ const CarsListPage = () => {
                     {/*             onChange={onChangeParams('_mileageTo')}/>*/}
                 </Space.Compact>
                 <Space.Compact size="large">
-                    <InputNumber type="number" placeholder="Мощность л.с. от" size="middle" value={_pwFrom}
+                    <Input placeholder="Мощность л.с. от" size="middle" value={_pwFrom}
                                  className="full-width"
                                  onChange={onChangeParams('_pwFrom')}/>
                     <InputNumber type="number" placeholder="Мощность л.с. до" size="middle" value={_pwTo}
