@@ -251,7 +251,25 @@ const CarsListPage = () => {
         setSearchParams(searchParams)
     }
 
-    const mileageOptions = useCallback((label: string) => [{label, value: undefined}, ...Array.apply(null,{length: 20}).map((val, i) => {
+    const priceOptions = useCallback((label: string) => [{label, value: ''}, ...Array.apply(null,{length: 400}).map((val, i) => {
+        const v = (i + 1) * 100000;
+
+        return {
+            value: v,
+            label: shortNumberFormat(v)
+        }
+    })], []);
+
+    const yearsOptions = useCallback((label: string) => [{label, value: ''}, ...Array.apply(null,{length: 40}).map((val, i) => {
+        const v = new Date().getFullYear() - i;
+
+        return {
+            value: v,
+            label: v
+        }
+    })], []);
+
+    const mileageOptions = useCallback((label: string) => [{label, value: ''}, ...Array.apply(null,{length: 20}).map((val, i) => {
         const v = (i + 1) * 10000;
 
         return {
@@ -311,33 +329,35 @@ const CarsListPage = () => {
             alignItems: 'center'
         }}>
             <Button type="primary" size="large" loading={isCountFetching} onClick={openFilters}
-                    style={{margin: 'auto'}}>Найдено {showCount} предложений</Button>
+                    style={{margin: 'auto'}}>Найдено {shortNumberFormat(showCount)} предложений</Button>
         </div>
         <Drawer
             title="Фильтры"
             placement="bottom"
             onClose={onClose}
             open={drawer === 'filters'}
-            contentWrapperStyle={{maxHeight: '330px'}}
+            contentWrapperStyle={{maxHeight: '400px'}}
         >
             <div className="filters">
-                <Space>
-                    <Button onClick={showDrawer}>
-                        Марка, модель
-                    </Button>
-                    <Space.Compact size="large">
-                        <InputNumber type="phone" placeholder="Цена от" size="middle" value={_priceFrom}
-                                     className="full-width"
-                                     onChange={onChangeParams('_priceFrom')}/>
-                        <InputNumber type="phone" placeholder="Цена до" size="middle" value={_priceTo}
-                                     className="full-width"
-                                     onChange={onChangeParams('_priceTo')}/>
-                    </Space.Compact>
-                </Space>
+                <Button onClick={showDrawer} size="large" >
+                    Марка, модель
+                </Button>
                 <Space.Compact size="large">
-                    <MobileSelect options={mileageOptions('Пробег от')} placeholder="Пробег от" size="middle" value={_mileageFrom}
+                    {/*<InputNumber type="phone" placeholder="Цена от" size="large" value={_priceFrom}*/}
+                    {/*             className="full-width"*/}
+                    {/*             onChange={onChangeParams('_priceFrom')}/>*/}
+                    {/*<InputNumber type="phone" placeholder="Цена до" size="large" value={_priceTo}*/}
+                    {/*             className="full-width"*/}
+                    {/*             onChange={onChangeParams('_priceTo')}/>*/}
+                    <MobileSelect options={priceOptions('Год от')} placeholder="Цена от" size="large" value={_priceFrom}
+                                  className="full-width" onChange={onChangeParams('_priceFrom')}/>
+                    <MobileSelect options={priceOptions('Год до')} placeholder="Цена до" size="large" value={_priceTo}
+                                  className="full-width" onChange={onChangeParams('_priceTo')}/>
+                </Space.Compact>
+                <Space.Compact size="large">
+                    <MobileSelect options={mileageOptions('Пробег от')} placeholder="Пробег от" size="large" value={_mileageFrom}
                             className="full-width" onChange={onChangeParams('_mileageFrom')}/>
-                    <MobileSelect options={mileageOptions('Пробег до')} placeholder="Пробег до" size="middle" value={_mileageTo}
+                    <MobileSelect options={mileageOptions('Пробег до')} placeholder="Пробег до" size="large" value={_mileageTo}
                                   className="full-width" onChange={onChangeParams('_mileageTo')}/>
                     {/*<InputNumber type="number" placeholder="Пробег от" size="middle" value={_mileageFrom}*/}
                     {/*             className="full-width"*/}
@@ -347,23 +367,27 @@ const CarsListPage = () => {
                     {/*             onChange={onChangeParams('_mileageTo')}/>*/}
                 </Space.Compact>
                 <Space.Compact size="large">
-                    <MobileSelect options={powerOptions('Мощность л.с. от')} placeholder="Мощность л.с. от" size="middle" value={_pwFrom}
+                    <MobileSelect options={powerOptions('Мощность л.с. от')} placeholder="Мощность л.с. от" size="large" value={_pwFrom}
                                  className="full-width"
                                  onChange={onChangeParams('_pwFrom')}/>
-                    <MobileSelect options={powerOptions('Мощность л.с. до')} placeholder="Мощность л.с. до" size="middle" value={_pwTo}
+                    <MobileSelect options={powerOptions('Мощность л.с. до')} placeholder="Мощность л.с. до" size="large" value={_pwTo}
                                  className="full-width"
                                  onChange={onChangeParams('_pwTo')}/>
                 </Space.Compact>
                 <Space.Compact size="large">
-                    <InputNumber type="number" placeholder="Год от" size="middle" value={_yearFrom}
-                                 className="full-width"
-                                 onChange={onChangeParams('_yearFrom')}/>
-                    <InputNumber type="number" placeholder="Год до" size="middle" value={_yearTo} className="full-width"
-                                 onChange={onChangeParams('_yearTo')}/>
+                    <MobileSelect options={yearsOptions('Год от')} placeholder="Год от" size="large" value={_yearFrom}
+                                  className="full-width" onChange={onChangeParams('_yearFrom')}/>
+                    <MobileSelect options={yearsOptions('Год до')} placeholder="Год до" size="large" value={_yearTo}
+                                  className="full-width" onChange={onChangeParams('_yearTo')}/>
+                    {/*<InputNumber type="number" placeholder="Год от" size="large" value={_yearFrom}*/}
+                    {/*             className="full-width"*/}
+                    {/*             onChange={onChangeParams('_yearFrom')}/>*/}
+                    {/*<InputNumber type="number" placeholder="Год до" size="large" value={_yearTo} className="full-width"*/}
+                    {/*             onChange={onChangeParams('_yearTo')}/>*/}
                 </Space.Compact>
                 <Select placeholder="Сортировать по умолчанию" onChange={onChangeSort} options={sortOptions}/>
-                <Button type="primary" loading={isCountFetching} onClick={acceptPrice}>
-                    Показать {showCount} предложений
+                <Button type="primary" loading={isCountFetching} onClick={acceptPrice} size="large">
+                    Показать {shortNumberFormat(showCount)} предложений
                 </Button>
             </div>
         </Drawer>
