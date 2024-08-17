@@ -261,9 +261,9 @@ const CarsListPage = () => {
 
     const sortOptions = useCallback((label: string) => [{
         label,
-        value: ''
+        value: 'sort=rel&order=asc'
     }, ...[
-        {label: 'По умолчанию', value: 'sort=rel&order=asc'},
+        // {label: 'По умолчанию', value: 'sort=rel&order=asc'},
         {label: 'Цена по убыванию', value: 'sort=p&order=desc'},
         {label: 'Цена по возрастанию', value: 'sort=p&order=asc'},
         {label: 'Пробег по убыванию', value: 'sort=ml&order=desc'},
