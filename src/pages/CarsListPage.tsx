@@ -65,7 +65,7 @@ const CarsListPage = () => {
         userId = window.Telegram.WebApp.initDataUnsafe.user?.id;
     }
 
-    const {data, isLoading: isCarLoading} = useGetCarsQuery({brand, model, priceTo, priceFrom, mileageFrom, mileageTo, yearFrom, yearTo, sort: ssort, order, page, userId});
+    const {data, isFetching: isCarLoading } = useGetCarsQuery({brand, model, priceTo, priceFrom, mileageFrom, mileageTo, yearFrom, yearTo, sort: ssort, order, page, userId});
     const {data: brandsData, isLoading: isBrandsLoading} = useGetBrandsQuery({});
     const {data: modelsData, isLoading: isModelsLoading} = useGetModelsQuery({brand});
 
@@ -220,7 +220,6 @@ return <>
             </Button>
         </div>
         <div className="car-item-container">
-            {isCarLoading && <Spin />}
             {/*<List data={combineResult} styles={virtualListStyles} height={500} itemHeight={314} itemKey="id">*/}
             {/*    {(car =>*/}
             {/*        <div onClick={() => onSelectCar(car.id)} className="car-item" key={car.id}>*/}
@@ -237,7 +236,7 @@ return <>
             {/*            </div>*/}
             {/*        </div>)}*/}
             {/*</List>*/}
-            {!isCarLoading && combineResult.map(car => <div onClick={() => onSelectCar(car.id)} className="car-item"
+            {combineResult.map(car => <div onClick={() => onSelectCar(car.id)} className="car-item"
                                                             key={car.id}>
                 {car.imgUrls[0] && <img src={car.imgUrls[0].replace('mo-160', 'mo-360')}
                                         style={{width: '360px'}}
@@ -250,6 +249,7 @@ return <>
                     <div className="mileage">{car.date.split('/')[1]} г., {shortNumberFormat(car.mileage)} км</div>
                 </div>
             </div>)}
+            {isCarLoading && <Spin />}
         </div>
         <Drawer
             title="Марки"
