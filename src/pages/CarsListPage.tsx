@@ -104,9 +104,6 @@ const CarsListPage = () => {
         tr
     });
     const {data: brandsData, isLoading: isBrandsLoading} = useGetBrandsQuery({});
-    const {data: modelsData, isLoading: isModelsLoading} = useGetModelsQuery({brand}, {
-        refetchOnMountOrArgChange: true
-    });
 
     const cars = data?.items || [];
 
@@ -116,12 +113,6 @@ const CarsListPage = () => {
         if (!isCarLoading)
             setCombineResult(prevState => prevState.concat(cars));
     }, [isCarLoading]);
-
-    const brands = brandsData || [];
-    const models = useMemo(() => (modelsData || []).map(m => m.items ? m.items.map(i => i.isGroup ? ({...i, value: `group_${i.value}`}) : i) : [m]).flat().sort((a, b) => a.label.localeCompare(b.label)), [modelsData]);
-
-    const selectedBrand = useMemo(() => brands.find(b => b.value === brand), [brand, brands])
-    const selectedModel = useMemo(() => models.find(b => b.value === model), [model, models])
 
     const showDrawer = () => {
         searchParams.set('drawer', brand ? 'model' : 'brand');
@@ -142,16 +133,15 @@ const CarsListPage = () => {
         searchParams.set('drawer', 'brand');
         searchParams.delete('model');
         setSearchParams(searchParams);
-        refetch();
     }
 
     const onSelectBrand = (brandKey: string) => {
         setCombineResult([]);
         searchParams.set('page', '1');
-        searchParams.set('brand', brandKey);
+        onChangeParams("_brand")(brandKey);
         searchParams.set('drawer', 'model');
-        setSearchParams(searchParams)
-        refetch();
+        setSearchParams(searchParams);
+        // refetchModels();
     }
 
     const onSelectModel = (brandKey: string) => {
@@ -167,6 +157,7 @@ const CarsListPage = () => {
         Array.from(searchParams.keys()).forEach(key => searchParams.delete(key));
         setSearchParams(searchParams);
         setParams({
+            _brand: brand || '',
             _pwFrom: pwFrom || '',
             _pwTo: pwTo || '',
             _priceFrom: priceFrom || '',
@@ -178,10 +169,11 @@ const CarsListPage = () => {
             _c: c || [],
             _ft: ft || [],
             _tr: tr || [],
+            _sort: sort || '',
         })
     }
 
-    const [{_pwFrom, _pwTo, _ft, _c, _tr, _priceFrom, _priceTo, _mileageFrom, _mileageTo, _yearFrom, _yearTo}, setParams] = useState({
+    const [{_pwFrom, _pwTo, _ft, _brand, _c, _sort, _tr, _priceFrom, _priceTo, _mileageFrom, _mileageTo, _yearFrom, _yearTo}, setParams] = useState({
         _pwFrom: pwFrom || '',
         _pwTo: pwTo || '',
         _priceFrom: priceFrom || '',
@@ -193,7 +185,19 @@ const CarsListPage = () => {
         _ft: ft || [],
         _c: c || [],
         _tr: tr || [],
+        _sort: sort || '',
+        _brand: brand || '',
     })
+
+    const {data: modelsData, isLoading: isModelsLoading} = useGetModelsQuery({brand: _brand}, {
+        refetchOnMountOrArgChange: true
+    });
+
+    const brands = brandsData || [];
+    const models = useMemo(() => (modelsData || []).map(m => m.items ? m.items.map(i => i.isGroup ? ({...i, value: `group_${i.value}`}) : i) : [m]).flat().sort((a, b) => a.label.localeCompare(b.label)), [modelsData]);
+
+    const selectedBrand = useMemo(() => brands.find(b => b.value === brand), [brand, brands])
+    const selectedModel = useMemo(() => models.find(b => b.value === model), [model, models])
 
     const {data: countData, isFetching: isCountFetching} = useGetCarsCountQuery({
         priceFrom: _priceFrom,
@@ -207,7 +211,7 @@ const CarsListPage = () => {
         ft: _ft,
         c: _c,
         tr: _tr,
-        brand,
+        brand: _brand,
         model
     })
 
@@ -260,6 +264,8 @@ const CarsListPage = () => {
         searchParams.set('mileageTo', _mileageTo);
         searchParams.set('yearFrom', _yearFrom);
         searchParams.set('yearTo', _yearTo);
+        searchParams.set('sort', _sort);
+        searchParams.set('brand', _brand);
         searchParams.delete('fuel-type');
         _ft.forEach(f => searchParams.append('fuel-type', f));
         searchParams.delete('c');
@@ -274,11 +280,6 @@ const CarsListPage = () => {
 
     const openFilters = () => {
         searchParams.set('drawer', 'filters');
-        setSearchParams(searchParams)
-    }
-
-    const onChangeSort = (value: string) => {
-        searchParams.set('sort', value);
         setSearchParams(searchParams)
     }
 
@@ -500,8 +501,8 @@ const CarsListPage = () => {
                               size="large" value={_ft}
                               className="full-width" onChange={onChangeParams('_ft')}/>
                 <MobileSelect options={sortOptions('Сортировать по умолчанию')} placeholder="Сортировать по умолчанию"
-                              size="large" value={sort}
-                              className="full-width" onChange={onChangeSort}/>
+                              size="large" value={_sort}
+                              className="full-width" onChange={onChangeParams('_sort')}/>
                 <Button type="primary" loading={isCountFetching} onClick={acceptPrice} size="large">
                     Показать {shortNumberFormat(showCount)} предложений
                 </Button>
@@ -520,7 +521,7 @@ const CarsListPage = () => {
         <Drawer
             title="Модели"
             placement="bottom"
-            onClose={onClose}
+            onClose={clearModel}
             open={drawer === 'model'}
         >
             <Button type="link" icon={<LeftOutlined/>} onClick={clearModel} style={{padding: 0}}>
