@@ -74,6 +74,7 @@ const CarsListPage = () => {
     const yearTo = searchParams.get('yearTo');
     const sort = searchParams.get('sort');
     const ft = searchParams.getAll('fuel-type') || [];
+    const c = searchParams.getAll('c') || [];
     const page = searchParams.get('page') || '1';
     const {sort: ssort, order} = t(sort);
 
@@ -97,6 +98,7 @@ const CarsListPage = () => {
         pwFrom,
         pwTo,
         userId,
+        c,
         ft
     });
     const {data: brandsData, isLoading: isBrandsLoading} = useGetBrandsQuery({});
@@ -171,11 +173,12 @@ const CarsListPage = () => {
             _mileageTo: mileageTo || '',
             _yearFrom: yearFrom || '',
             _yearTo: yearTo || '',
+            _c: c || [],
             _ft: ft || []
         })
     }
 
-    const [{_pwFrom, _pwTo, _ft, _priceFrom, _priceTo, _mileageFrom, _mileageTo, _yearFrom, _yearTo}, setParams] = useState({
+    const [{_pwFrom, _pwTo, _ft, _c, _priceFrom, _priceTo, _mileageFrom, _mileageTo, _yearFrom, _yearTo}, setParams] = useState({
         _pwFrom: pwFrom || '',
         _pwTo: pwTo || '',
         _priceFrom: priceFrom || '',
@@ -184,7 +187,8 @@ const CarsListPage = () => {
         _mileageTo: mileageTo || '',
         _yearFrom: yearFrom || '',
         _yearTo: yearTo || '',
-        _ft: ft || []
+        _ft: ft || [],
+        _c: c || [],
     })
 
     const {data: countData, isFetching: isCountFetching} = useGetCarsCountQuery({
@@ -197,6 +201,7 @@ const CarsListPage = () => {
         pwFrom: _pwFrom,
         pwTo: _pwTo,
         ft: _ft,
+        c: _c,
         brand,
         model
     })
@@ -250,8 +255,10 @@ const CarsListPage = () => {
         searchParams.set('mileageTo', _mileageTo);
         searchParams.set('yearFrom', _yearFrom);
         searchParams.set('yearTo', _yearTo);
-        searchParams.delete('ft');
-        _ft.forEach(f => searchParams.append('ft', f));
+        searchParams.delete('fuel-type');
+        _ft.forEach(f => searchParams.append('fuel-type', f));
+        searchParams.delete('c');
+        _c.forEach(f => searchParams.append('c', f));
         searchParams.set('page', '1');
         searchParams.delete('drawer');
         setSearchParams(searchParams);
@@ -281,6 +288,18 @@ const CarsListPage = () => {
         {label: 'Год по возрастанию', value: 'sort=fr&order=asc'},
     ]], [])
 
+    const categoriesOptions = useCallback((label: string) => [{
+        label,
+        value: undefined
+    }, ...[
+        // {label: 'По умолчанию', value: 'sort=rel&order=asc'},
+        {label: 'Седан', value: 'Limousine'},
+        {label: 'Купе', value: 'SportsCar'},
+        {label: 'Кабриолет', value: 'Cabrio'},
+        {label: 'Универсал', value: 'EstateCar'},
+        {label: 'Внедорожник', value: 'OffRoad'},
+    ]], [])
+
     const fuelTypesOptions = useCallback((label: string) => [{
         label,
         value: undefined
@@ -288,7 +307,7 @@ const CarsListPage = () => {
         // {label: 'По умолчанию', value: 'sort=rel&order=asc'},
         {label: 'Бензин', value: 'PETROL'},
         {label: 'Дизель', value: 'DIESEL'},
-        {label: 'Электрический', value: 'ELECTRICITY'},
+        {label: 'Электро', value: 'ELECTRICITY'},
         {label: 'Гибрид/Бензин', value: 'HYBRID_PETROL'},
         {label: 'Гибрид/Дизель', value: 'HYBRID_DIESEL'},
     ]], [])
@@ -397,7 +416,7 @@ const CarsListPage = () => {
             placement="bottom"
             onClose={onClose}
             open={drawer === 'filters'}
-            contentWrapperStyle={{maxHeight: '440px'}}
+            contentWrapperStyle={{maxHeight: '520px'}}
             extra={<Button onClick={clearFilters} style={{padding: 0}} type="link">Сбросить</Button>}
         >
             <div className="filters">
@@ -454,7 +473,10 @@ const CarsListPage = () => {
                 </Space.Compact>
                 {/*<Select placeholder="Сортировать по умолчанию" onChange={onChangeSort} options={sortOptions}/>*/}
 
-                <Select mode="multiple" options={fuelTypesOptions('Все')} placeholder="Все"
+                <Select mode="multiple" options={categoriesOptions('Все кузова')} placeholder="Все кузова"
+                        size="large" value={_c}
+                        className="full-width" onChange={onChangeParams('_c')}/>
+                <Select mode="multiple" options={fuelTypesOptions('Все двигатели')} placeholder="Все двигатели"
                               size="large" value={_ft}
                               className="full-width" onChange={onChangeParams('_ft')}/>
                 <MobileSelect options={sortOptions('Сортировать по умолчанию')} placeholder="Сортировать по умолчанию"
