@@ -1,4 +1,4 @@
-import {Button, Drawer, SelectProps, Space, Spin} from "antd";
+import {Button, Drawer, Select, SelectProps, Space, Spin} from "antd";
 import {LeftOutlined} from "@ant-design/icons";
 import React, {FC, useCallback, useEffect, useMemo, useState} from "react";
 import {useNavigate, useSearchParams} from "react-router-dom";
@@ -73,6 +73,7 @@ const CarsListPage = () => {
     const yearFrom = searchParams.get('yearFrom');
     const yearTo = searchParams.get('yearTo');
     const sort = searchParams.get('sort');
+    const ft = searchParams.getAll('fuel-type') || [];
     const page = searchParams.get('page') || '1';
     const {sort: ssort, order} = t(sort);
 
@@ -95,7 +96,8 @@ const CarsListPage = () => {
         page,
         pwFrom,
         pwTo,
-        userId
+        userId,
+        ft
     });
     const {data: brandsData, isLoading: isBrandsLoading} = useGetBrandsQuery({});
     const {data: modelsData, isLoading: isModelsLoading} = useGetModelsQuery({brand}, {
@@ -168,11 +170,12 @@ const CarsListPage = () => {
             _mileageFrom: mileageFrom || '',
             _mileageTo: mileageTo || '',
             _yearFrom: yearFrom || '',
-            _yearTo: yearTo || ''
+            _yearTo: yearTo || '',
+            _ft: ft || []
         })
     }
 
-    const [{_pwFrom, _pwTo, _priceFrom, _priceTo, _mileageFrom, _mileageTo, _yearFrom, _yearTo}, setParams] = useState({
+    const [{_pwFrom, _pwTo, _ft, _priceFrom, _priceTo, _mileageFrom, _mileageTo, _yearFrom, _yearTo}, setParams] = useState({
         _pwFrom: pwFrom || '',
         _pwTo: pwTo || '',
         _priceFrom: priceFrom || '',
@@ -180,7 +183,8 @@ const CarsListPage = () => {
         _mileageFrom: mileageFrom || '',
         _mileageTo: mileageTo || '',
         _yearFrom: yearFrom || '',
-        _yearTo: yearTo || ''
+        _yearTo: yearTo || '',
+        _ft: ft || []
     })
 
     const {data: countData, isFetching: isCountFetching} = useGetCarsCountQuery({
@@ -192,6 +196,7 @@ const CarsListPage = () => {
         yearTo: _yearTo,
         pwFrom: _pwFrom,
         pwTo: _pwTo,
+        ft: _ft,
         brand,
         model
     })
@@ -245,6 +250,8 @@ const CarsListPage = () => {
         searchParams.set('mileageTo', _mileageTo);
         searchParams.set('yearFrom', _yearFrom);
         searchParams.set('yearTo', _yearTo);
+        searchParams.delete('ft');
+        _ft.forEach(f => searchParams.append('ft', f));
         searchParams.set('page', '1');
         searchParams.delete('drawer');
         setSearchParams(searchParams);
@@ -272,6 +279,18 @@ const CarsListPage = () => {
         {label: 'Пробег по возрастанию', value: 'sort=ml&order=asc'},
         {label: 'Год по убыванию', value: 'sort=fr&order=desc'},
         {label: 'Год по возрастанию', value: 'sort=fr&order=asc'},
+    ]], [])
+
+    const fuelTypesOptions = useCallback((label: string) => [{
+        label,
+        value: undefined
+    }, ...[
+        // {label: 'По умолчанию', value: 'sort=rel&order=asc'},
+        {label: 'Бензин', value: 'PETROL'},
+        {label: 'Дизель', value: 'DIESEL'},
+        {label: 'Электрический', value: 'ELECTRICITY'},
+        {label: 'Гибрид/Бензин', value: 'HYBRID_PETROL'},
+        {label: 'Гибрид/Дизель', value: 'HYBRID_DIESEL'},
     ]], [])
 
     const priceOptions = useCallback((label: string) => [{
@@ -374,7 +393,7 @@ const CarsListPage = () => {
                     style={{margin: 'auto'}}>Найдено {shortNumberFormat(showCount)} предложений</Button>
         </div>
         <Drawer
-            title="Фильтры"
+            title="Параметры"
             placement="bottom"
             onClose={onClose}
             open={drawer === 'filters'}
@@ -435,6 +454,9 @@ const CarsListPage = () => {
                 </Space.Compact>
                 {/*<Select placeholder="Сортировать по умолчанию" onChange={onChangeSort} options={sortOptions}/>*/}
 
+                <Select mode="multiple" options={fuelTypesOptions('Все')} placeholder="Все"
+                              size="large" value={_ft}
+                              className="full-width" onChange={onChangeParams('_ft')}/>
                 <MobileSelect options={sortOptions('Сортировать по умолчанию')} placeholder="Сортировать по умолчанию"
                               size="large" value={sort}
                               className="full-width" onChange={onChangeSort}/>
