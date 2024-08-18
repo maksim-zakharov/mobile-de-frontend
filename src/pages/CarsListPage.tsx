@@ -189,7 +189,7 @@ const CarsListPage = () => {
         _brand: brand || '',
     })
 
-    const {data: modelsData, isLoading: isModelsLoading, isError: isModelsError, refetch: refetchModels} = useGetModelsQuery({brand: _brand}, {
+    const {data: modelsData, isFetching: isModelsLoading, isError: isModelsError, refetch: refetchModels} = useGetModelsQuery({brand: _brand}, {
         refetchOnMountOrArgChange: true
     });
 
