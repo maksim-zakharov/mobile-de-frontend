@@ -189,7 +189,7 @@ const CarsListPage = () => {
         _brand: brand || '',
     })
 
-    const {data: modelsData, isLoading: isModelsLoading} = useGetModelsQuery({brand: _brand}, {
+    const {data: modelsData, isLoading: isModelsLoading, isError: isModelsError, refetch: refetchModels} = useGetModelsQuery({brand: _brand}, {
         refetchOnMountOrArgChange: true
     });
 
@@ -524,12 +524,15 @@ const CarsListPage = () => {
             onClose={clearModel}
             open={drawer === 'model'}
         >
-            <Button type="link" icon={<LeftOutlined/>} onClick={clearModel} style={{padding: 0}}>
-                Выбрать другую марку
-            </Button>
-            {isModelsLoading && <Spin/>}
-            {!isModelsLoading && models.map(brand => <div className="list-item" key={brand.value}
-                                                          onClick={() => onSelectModel(brand.value)}>{brand.label}</div>)}
+            <div style={{display: 'flex', flexDirection: 'column', gap: '16px', alignItems: 'flex-start'}}>
+                <Button type="link" icon={<LeftOutlined/>} onClick={clearModel} style={{padding: 0}}>
+                    Выбрать другую марку
+                </Button>
+                {isModelsLoading && <Spin style={{    margin: 'auto'}}/>}
+                {!isModelsLoading && !isModelsError && models.map(brand => <div className="list-item" key={brand.value}
+                                                                                onClick={() => onSelectModel(brand.value)}>{brand.label}</div>)}
+                {isModelsError && <Button onClick={refetchModels} style={{    margin: 'auto'}} type="primary">Обновить</Button>}
+            </div>
         </Drawer>
     </>
 }
