@@ -1,5 +1,5 @@
-import {Button, Drawer, Select, SelectProps, Space, Spin} from "antd";
-import {LeftOutlined} from "@ant-design/icons";
+import {Button, Drawer, Input, Select, SelectProps, Space, Spin} from "antd";
+import {LeftOutlined, SearchOutlined} from "@ant-design/icons";
 import React, {FC, useCallback, useEffect, useMemo, useState} from "react";
 import {useNavigate, useSearchParams} from "react-router-dom";
 import {useGetBrandsQuery, useGetCarsCountQuery, useGetCarsQuery, useGetModelsQuery} from "../api.tsx";
@@ -200,7 +200,10 @@ const CarsListPage = () => {
     const brands = brandsData || [];
     const models = useMemo(() => (modelsData || []).map(m => m.items ? m.items.map(i => i.isGroup ? ({...i, value: `group_${i.value}`}) : i) : [m]).flat().sort((a, b) => a.label.localeCompare(b.label)), [modelsData]);
 
-    const selectedBrand = useMemo(() => brands.find(b => b.value === brand), [brand, brands])
+    const [modelSearch, setModelSearch] = useState('');
+    const filteredModels = useMemo(() => models.filter(m => m.label.toLowerCase().includes(modelSearch)), [models, modelSearch]);
+
+    const selectedBrand = useMemo(() => brands.find(b => b.value === _brand), [_brand, brands])
     const selectedModel = useMemo(() => models.find(b => b.value === model), [model, models])
 
     const {data: countData, isFetching: isCountFetching} = useGetCarsCountQuery({
@@ -545,8 +548,9 @@ const CarsListPage = () => {
                 <Button type="link" icon={<LeftOutlined/>} onClick={clearModel} style={{padding: 0}}>
                     Выбрать другую марку
                 </Button>
+                <Input placeholder="Найти модель" suffix={<SearchOutlined />} onChange={e => setModelSearch(e.target.value)} />
                 {isModelsLoading && <Spin style={{    margin: 'auto'}}/>}
-                {!isModelsLoading && !isModelsError && models.map(brand => <div className="list-item" key={brand.value}
+                {!isModelsLoading && !isModelsError && filteredModels.map(brand => <div className="list-item" key={brand.value}
                                                                                 onClick={() => onSelectModel(brand.value)}>{brand.label}</div>)}
                 {isModelsError && <Button onClick={refetchModels} style={{    margin: 'auto'}} type="primary">Обновить</Button>}
             </div>
