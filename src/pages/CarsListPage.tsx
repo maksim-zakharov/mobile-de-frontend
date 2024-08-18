@@ -118,7 +118,7 @@ const CarsListPage = () => {
     }, [isCarLoading]);
 
     const brands = brandsData || [];
-    const models = useMemo(() => (modelsData || []).map(m => m.items ? m.items : [m]).flat(), [modelsData]);
+    const models = useMemo(() => (modelsData || []).map(m => m.items ? m.items.map(i => i.isGroup ? ({...i, value: `group_${i.value}`}) : i) : [m]).flat().sort((a, b) => a.label.localeCompare(b.label)), [modelsData]);
 
     const selectedBrand = useMemo(() => brands.find(b => b.value === brand), [brand, brands])
     const selectedModel = useMemo(() => models.find(b => b.value === model), [model, models])
