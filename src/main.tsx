@@ -26,9 +26,9 @@ createRoot(document.getElementById('root')!).render(
     <StrictMode>
         <Provider store={store}>
             <ConfigProvider locale={ru_RU}>
-                <HashRouter>
+                <BrowserRouter>
                     <App/>
-                </HashRouter>
+                </BrowserRouter>
             </ConfigProvider>
         </Provider>
     </StrictMode>,

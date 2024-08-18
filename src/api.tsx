@@ -1,14 +1,27 @@
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
+import { BaseQueryApi, createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
 import queryString from 'query-string';
+
+const baseQuery = () =>
+    fetchBaseQuery({
+        baseUrl: process.env.IS_DEV ? `${process.env.BASE_URL}/api` : '/api', // `${process.env.BASE_URL}/api`, // process.env.NODE_ENV !== 'dev' ? '/api' : `${process.env.BASE_URL}/api`
+
+        paramsSerializer: (params: Record<string, unknown>) => queryString.stringify(params, { arrayFormat: 'none' }),
+    });
+
+export const baseQueryWithRepeat = (repeatCount: number) => async (args, api: BaseQueryApi, extraOptions) => {
+    let result = await baseQuery()(args, api, extraOptions);
+
+    if (result?.error?.status === 500 && repeatCount > 0) {
+        return baseQueryWithRepeat(--repeatCount)(args, api, extraOptions);
+    }
+
+    return result;
+};
 
 export const api = createApi({
     reducerPath: 'api',
     tagTypes: [],
-    baseQuery: fetchBaseQuery({
-        baseUrl: process.env.IS_DEV ? `${process.env.BASE_URL}/api` : '/api', // `${process.env.BASE_URL}/api`, // process.env.NODE_ENV !== 'dev' ? '/api' : `${process.env.BASE_URL}/api`
-
-        paramsSerializer: (params: Record<string, unknown>) => queryString.stringify(params, { arrayFormat: 'none' }),
-    }),
+    baseQuery: baseQueryWithRepeat(2),
     endpoints: (builder) => ({
         getCars: builder.query<any, any>({
             query: (params) => ({ method: 'GET', url: '/cars', params }),
