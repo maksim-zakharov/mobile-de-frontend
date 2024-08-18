@@ -426,7 +426,7 @@ const CarsListPage = () => {
                     {/*<div className="date">{car.date}</div>*/}
                     {/*<h4>Пробег</h4>*/}
                     <div
-                        className="mileage">{car.date !== 'Neuwagen' ? `${car.date.split('/')[1]} г., ${shortNumberFormat(car.mileage)} км` : 'Новый'}, {car.power} л.с.
+                        className="mileage">{car.date !== 'Neuwagen' ? `${car.date.split('/')[1]} г., ${shortNumberFormat(car.mileage)} км` : 'Новый'}, {car.power} л.с., {car.fuelType}, {car.transmissionType}
                     </div>
                 </div>
             </div>)}
