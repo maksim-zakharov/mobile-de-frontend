@@ -73,6 +73,7 @@ const CarsListPage = () => {
     const yearFrom = searchParams.get('yearFrom');
     const yearTo = searchParams.get('yearTo');
     const sort = searchParams.get('sort');
+    const con = searchParams.get('con');
     const ft = searchParams.getAll('fuel-type') || [];
     const c = searchParams.getAll('c') || [];
     const tr = searchParams.getAll('tr') || [];
@@ -101,6 +102,7 @@ const CarsListPage = () => {
         userId,
         c,
         ft,
+        con,
         tr
     });
     const {data: brandsData, isLoading: isBrandsLoading} = useGetBrandsQuery({});
@@ -170,12 +172,14 @@ const CarsListPage = () => {
             _ft: ft || [],
             _tr: tr || [],
             _sort: sort || '',
+            _con: con || ''
         })
     }
 
-    const [{_pwFrom, _pwTo, _ft, _brand, _c, _sort, _tr, _priceFrom, _priceTo, _mileageFrom, _mileageTo, _yearFrom, _yearTo}, setParams] = useState({
+    const [{_pwFrom, _pwTo, _ft, _brand, _con, _c, _sort, _tr, _priceFrom, _priceTo, _mileageFrom, _mileageTo, _yearFrom, _yearTo}, setParams] = useState({
         _pwFrom: pwFrom || '',
         _pwTo: pwTo || '',
+        _con: con || '',
         _priceFrom: priceFrom || '',
         _priceTo: priceTo || '',
         _mileageFrom: mileageFrom || '',
@@ -212,6 +216,7 @@ const CarsListPage = () => {
         c: _c,
         tr: _tr,
         brand: _brand,
+        con: _con,
         model
     })
 
@@ -266,6 +271,7 @@ const CarsListPage = () => {
         searchParams.set('yearTo', _yearTo);
         searchParams.set('sort', _sort);
         searchParams.set('brand', _brand);
+        searchParams.set('con', _con)
         searchParams.delete('fuel-type');
         _ft.forEach(f => searchParams.append('fuel-type', f));
         searchParams.delete('c');
@@ -282,6 +288,14 @@ const CarsListPage = () => {
         searchParams.set('drawer', 'filters');
         setSearchParams(searchParams)
     }
+
+    const conditionsOptions = useCallback((label: string) => [{
+        label,
+        value: undefined
+    }, ...[
+        {label: 'Новые', value: 'NEW'},
+        {label: 'С пробегом', value: 'USED'},
+    ]], [])
 
     const sortOptions = useCallback((label: string) => [{
         label,
@@ -434,7 +448,7 @@ const CarsListPage = () => {
             placement="bottom"
             onClose={onClose}
             open={drawer === 'filters'}
-            // contentWrapperStyle={{maxHeight: '580px'}}
+            // contentWrapperStyle={{maxHeight: '600px'}}
             extra={<Button onClick={clearFilters} style={{padding: 0}} type="link">Сбросить</Button>}
         >
             <div className="filters">
@@ -503,6 +517,9 @@ const CarsListPage = () => {
                 <MobileSelect options={sortOptions('Сортировать по умолчанию')} placeholder="Сортировать по умолчанию"
                               size="large" value={_sort}
                               className="full-width" onChange={onChangeParams('_sort')}/>
+                <MobileSelect options={conditionsOptions('Все')} placeholder="Все"
+                              size="large" value={_con}
+                              className="full-width" onChange={onChangeParams('_con')}/>
                 <Button type="primary" loading={isCountFetching} onClick={acceptPrice} size="large">
                     Показать {shortNumberFormat(showCount)} предложений
                 </Button>
