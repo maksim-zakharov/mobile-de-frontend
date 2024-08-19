@@ -127,7 +127,7 @@ const CarsListPage = () => {
     };
 
     const onSelectCar = (id: string) => {
-        navigate(id);
+        navigate(id.toString());
     };
 
     const clearModel = () => {
