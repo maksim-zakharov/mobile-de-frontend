@@ -16,7 +16,7 @@ const CarDetailsPage = () => {
         skip: !id
     });
 
-    const technical = data?.technicalData || [];
+    const technical = data?.attributes || [];
 
     return <div className="container">
         <Button icon={<LeftOutlined />} style={{margin: '16px 16px 0'}} type="link" size="large" onClick={() => window.history.back()}/>
