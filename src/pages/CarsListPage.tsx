@@ -85,7 +85,7 @@ const CarsListPage = () => {
         userId = window.Telegram.WebApp.initDataUnsafe.user?.id;
     }
 
-    const {data, isFetching: isCarLoading, refetch} = useGetCarsQuery({
+    const {data, isFetching: isCarLoading, isError: isCarsError, refetch} = useGetCarsQuery({
         brand,
         model,
         priceTo,
@@ -413,6 +413,7 @@ const CarsListPage = () => {
             {/*            </div>*/}
             {/*        </div>)}*/}
             {/*</List>*/}
+            {isCarsError && <Button onClick={refetch} style={{    margin: 'auto'}} type="primary">Обновить</Button>}
             {combineResult.map(car => <div onClick={() => onSelectCar(car.id)} className="car-item"
                                            key={car.id}>
                 {car.imgUrls[0] && <img src={car.imgUrls[0].replace('mo-160', 'mo-360')}
