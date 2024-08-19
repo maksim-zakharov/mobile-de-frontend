@@ -2,6 +2,7 @@ import {useGetCarByIdQuery} from "../api.tsx";
 import {useParams, useSearchParams} from "react-router-dom";
 import {Button, Spin} from "antd";
 import React from "react";
+import {LeftOutlined} from "@ant-design/icons";
 
 const CarDetailsPage = () => {
     const {id} = useParams();
@@ -18,6 +19,7 @@ const CarDetailsPage = () => {
     const technical = data?.technicalData || [];
 
     return <div className="container">
+        <Button icon={<LeftOutlined />} style={{margin: '16px 16px 0'}} type="link" size="large" onClick={() => window.history.back()}/>
         <h2>Характеристики</h2>
         {isFetching && <Spin style={{width:'100%',height:'100%'}}/>}
         {isError && <Button onClick={refetch} style={{    margin: 'auto'}} type="primary">Обновить</Button>}
