@@ -152,7 +152,7 @@ const CarsListPage = () => {
         searchParams.set('model', brandKey);
         searchParams.set('drawer', 'filters');
         setSearchParams(searchParams)
-        refetch();
+        // refetch();
     }
 
     const clearFilters = () => {
@@ -284,7 +284,7 @@ const CarsListPage = () => {
         searchParams.set('page', '1');
         searchParams.delete('drawer');
         setSearchParams(searchParams);
-        refetch()
+        // refetch()
     }
 
     const openFilters = () => {
