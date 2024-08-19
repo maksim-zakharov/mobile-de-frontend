@@ -201,7 +201,7 @@ const CarsListPage = () => {
     const models = useMemo(() => (modelsData || []).map(m => m.items ? m.items.map(i => i.isGroup ? ({...i, value: `group_${i.value}`}) : i) : [m]).flat().sort((a, b) => a.label.localeCompare(b.label)), [modelsData]);
 
     const [modelSearch, setModelSearch] = useState('');
-    const filteredModels = useMemo(() => models.filter(m => m.label.toLowerCase().includes(modelSearch)), [models, modelSearch]);
+    const filteredModels = useMemo(() => models.filter(m => m.label.toLowerCase().includes(modelSearch.toLowerCase())), [models, modelSearch]);
 
     const selectedBrand = useMemo(() => brands.find(b => b.value === _brand), [_brand, brands])
     const selectedModel = useMemo(() => models.find(b => b.value === model), [model, models])
