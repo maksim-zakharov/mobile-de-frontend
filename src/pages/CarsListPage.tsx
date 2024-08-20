@@ -162,7 +162,22 @@ const CarsListPage = () => {
         })
     }
 
-    const [{_pwFrom, _pwTo, _ft, _brand, _con, _c, _sort, _tr, _priceFrom, _priceTo, _mileageFrom, _mileageTo, _yearFrom, _yearTo}, setParams] = useState({
+    const [{
+        _pwFrom,
+        _pwTo,
+        _ft,
+        _brand,
+        _con,
+        _c,
+        _sort,
+        _tr,
+        _priceFrom,
+        _priceTo,
+        _mileageFrom,
+        _mileageTo,
+        _yearFrom,
+        _yearTo
+    }, setParams] = useState({
         _pwFrom: pwFrom || '',
         _pwTo: pwTo || '',
         _con: con || '',
@@ -179,12 +194,20 @@ const CarsListPage = () => {
         _brand: brand || '',
     })
 
-    const {data: modelsData, isFetching: isModelsLoading, isError: isModelsError, refetch: refetchModels} = useGetModelsQuery({brand: _brand}, {
+    const {
+        data: modelsData,
+        isFetching: isModelsLoading,
+        isError: isModelsError,
+        refetch: refetchModels
+    } = useGetModelsQuery({brand: _brand}, {
         refetchOnMountOrArgChange: true
     });
 
     const brands = brandsData || [];
-    const models = useMemo(() => (modelsData || []).map(m => m.items ? m.items.map(i => i.isGroup ? ({...i, value: `group_${i.value}`}) : i) : [m]).flat().sort((a, b) => a.label.localeCompare(b.label)), [modelsData]);
+    const models = useMemo(() => (modelsData || []).map(m => m.items ? m.items.map(i => i.isGroup ? ({
+        ...i,
+        value: `group_${i.value}`
+    }) : i) : [m.isGroup ? ({...m, value: `group_${m.value}`}) : m]).flat(), [modelsData]);
 
     const [modelSearch, setModelSearch] = useState('');
     const filteredModels = useMemo(() => models.filter(m => m.label.toLowerCase().includes(modelSearch.toLowerCase())), [models, modelSearch]);
@@ -399,7 +422,7 @@ const CarsListPage = () => {
             {/*            </div>*/}
             {/*        </div>)}*/}
             {/*</List>*/}
-            {isCarsError && <Button onClick={refetch} style={{    margin: 'auto'}} type="primary">Обновить</Button>}
+            {isCarsError && <Button onClick={refetch} style={{margin: 'auto'}} type="primary">Обновить</Button>}
             {combineResult.map(car => <div onClick={() => onSelectCar(car.id)} className="car-item"
                                            key={car.id}>
                 {car.imgUrls[0] && <img src={car.imgUrls[0].replace('mo-160', 'mo-360')}
@@ -502,8 +525,8 @@ const CarsListPage = () => {
                         size="large" value={_c}
                         className="full-width" onChange={onChangeParams('_c')}/>
                 <Select mode="multiple" options={fuelTypesOptions('Все двигатели')} placeholder="Все двигатели"
-                              size="large" value={_ft}
-                              className="full-width" onChange={onChangeParams('_ft')}/>
+                        size="large" value={_ft}
+                        className="full-width" onChange={onChangeParams('_ft')}/>
                 <MobileSelect options={sortOptions('Сортировать по умолчанию')} placeholder="Сортировать по умолчанию"
                               size="large" value={_sort}
                               className="full-width" onChange={onChangeParams('_sort')}/>
@@ -535,11 +558,14 @@ const CarsListPage = () => {
                 <Button type="link" icon={<LeftOutlined/>} onClick={clearModel} style={{padding: 0}}>
                     Выбрать другую марку
                 </Button>
-                <Input placeholder="Найти модель" suffix={<SearchOutlined />} onChange={e => setModelSearch(e.target.value)} />
-                {isModelsLoading && <Spin style={{    margin: 'auto'}}/>}
-                {!isModelsLoading && !isModelsError && filteredModels.map(brand => <div className="list-item" key={brand.value}
-                                                                                onClick={() => onSelectModel(brand.value)}>{brand.label}</div>)}
-                {isModelsError && <Button onClick={refetchModels} style={{    margin: 'auto'}} type="primary">Обновить</Button>}
+                <Input placeholder="Найти модель" suffix={<SearchOutlined/>}
+                       onChange={e => setModelSearch(e.target.value)}/>
+                {isModelsLoading && <Spin style={{margin: 'auto'}}/>}
+                {!isModelsLoading && !isModelsError && filteredModels.map(brand => <div className="list-item"
+                                                                                        key={brand.value}
+                                                                                        onClick={() => onSelectModel(brand.value)}>{brand.label}</div>)}
+                {isModelsError &&
+                    <Button onClick={refetchModels} style={{margin: 'auto'}} type="primary">Обновить</Button>}
             </div>
         </Drawer>
     </>
