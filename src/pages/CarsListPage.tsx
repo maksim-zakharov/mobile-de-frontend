@@ -303,7 +303,7 @@ const CarsListPage = () => {
 
     const conditionsOptions = useCallback((label: string) => [{
         label,
-        value: undefined
+        value: ''
     }, ...[
         {label: 'Новые', value: 'NEW'},
         {label: 'С пробегом', value: 'USED'},
@@ -324,7 +324,7 @@ const CarsListPage = () => {
 
     const transmissionsOptions = useCallback((label: string) => [{
         label,
-        value: undefined
+        value: ''
     }, ...[
         // {label: 'По умолчанию', value: 'sort=rel&order=asc'},
         {label: 'Автоматическая', value: 'AUTOMATIC_GEAR'},
@@ -334,7 +334,7 @@ const CarsListPage = () => {
 
     const categoriesOptions = useCallback((label: string) => [{
         label,
-        value: undefined
+        value: ''
     }, ...[
         // {label: 'По умолчанию', value: 'sort=rel&order=asc'},
         {label: 'Седан', value: 'Limousine'},
@@ -346,7 +346,7 @@ const CarsListPage = () => {
 
     const fuelTypesOptions = useCallback((label: string) => [{
         label,
-        value: undefined
+        value: ''
     }, ...[
         // {label: 'По умолчанию', value: 'sort=rel&order=asc'},
         {label: 'Бензин', value: 'PETROL'},
@@ -394,7 +394,7 @@ const CarsListPage = () => {
 
     const powerOptions = useCallback((label: string) => [{
         label,
-        value: undefined
+        value: ''
     }, ...Array.apply(null, {length: 200}).map((val, i) => {
         const v = (i + 1) * 10;
 
