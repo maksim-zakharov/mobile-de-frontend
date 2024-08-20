@@ -3,21 +3,7 @@ import {LeftOutlined, SearchOutlined} from "@ant-design/icons";
 import React, {FC, useCallback, useEffect, useMemo, useState} from "react";
 import {useNavigate, useSearchParams} from "react-router-dom";
 import {useGetBrandsQuery, useGetCarsCountQuery, useGetCarsQuery, useGetModelsQuery} from "../api.tsx";
-
-export const moneyFormat = (money: number, maximumFractionDigits = undefined, minimumFractionDigits = undefined) =>
-    new Intl.NumberFormat('ru-RU', {
-        style: 'currency',
-        currency: 'RUB',
-        maximumFractionDigits,
-        minimumFractionDigits
-    }).format(money);
-
-export const shortNumberFormat = (number: number, minimumFractionDigits = undefined, maximumFractionDigits = 1) =>
-    Intl.NumberFormat('ru-RU', {
-        // notation: 'compact',
-        minimumFractionDigits,
-        maximumFractionDigits,
-    }).format(number || 0);
+import {moneyFormat, shortNumberFormat} from "../utils.ts";
 
 const MobileSelect: FC<SelectProps> = (props) => {
 

@@ -20,3 +20,18 @@ export const virtualListStyles : {
         transition: "background-color .2s ease-in"
     }
 }
+
+export const moneyFormat = (money: number, maximumFractionDigits = undefined, minimumFractionDigits = undefined) =>
+    new Intl.NumberFormat('ru-RU', {
+        style: 'currency',
+        currency: 'RUB',
+        maximumFractionDigits,
+        minimumFractionDigits
+    }).format(money);
+
+export const shortNumberFormat = (number: number, minimumFractionDigits = undefined, maximumFractionDigits = 1) =>
+    Intl.NumberFormat('ru-RU', {
+        // notation: 'compact',
+        minimumFractionDigits,
+        maximumFractionDigits,
+    }).format(number || 0);

@@ -1,0 +1,52 @@
+:root {
+  --font-size-h4: 24px;
+  --font-size-h5: 20px;
+  --line-height-h5: 24px;
+  --main-heading-font: "YS Text", "YSTextVariable", "Arial", "Helvetica Neue", "Helvetica", yandex-sans-rub-sign, sans-serif;
+  --main-font: "YS Text", "YSTextVariable", "Arial", "Helvetica Neue", "Helvetica", yandex-sans-rub-sign, sans-serif;
+  --font-size-body2: 13px;
+  --foreground-secondary: #1c212899;
+  --border-radius-l: 16px;
+}
+
+.CarDetailsPage {
+  .PageCard__title {
+    font-size: var(--font-size-h5);
+    font-weight: 400;
+    line-height: var(--line-height-h5);
+    margin: 4px 0;
+    padding: 0;
+    font-family: var(--main-heading-font);
+  }
+
+  .OfferGallery{
+    margin-top: 12px;
+    border-radius: var(--border-radius-l) 0 0 var(--border-radius-l);
+    overflow: hidden;
+    height: 270px;
+    object-fit: cover;
+  }
+
+  .CardPriceNew-{
+    margin: 4px 0;
+  }
+
+  .CardPriceNew__price {
+    font-size: var(--font-size-h4);
+    font-weight: 700;
+    line-height: var(--line-height-h5);
+    font-family: var(--main-font);
+  }
+
+  .CardPriceNew__rowSecondary {
+    font-size: var(--font-size-body2);
+    line-height: 15px;
+    margin-top: 6px;
+    color: var(--foreground-secondary);
+    font-family: var(--main-font);
+  }
+
+  .PageContainer {
+    padding: 0 16px;
+  }
+}
