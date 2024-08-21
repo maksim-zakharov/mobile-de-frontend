@@ -43,8 +43,8 @@ const CarDetailsPage = () => {
                 <div className="value">{item.value}</div>
             </div>)}
             <h2>Комплектация</h2>
-            {features.map(item => <div className="features__name"><span
-                className="catalog-option__name">{item}</span>
+            {features.map(item => <div className="features__name" key={item.value}><span
+                className="catalog-option__name">{item.label}</span>
             </div>)}
         </div>
     </div>
