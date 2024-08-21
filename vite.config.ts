@@ -27,6 +27,12 @@ export default ({ mode }) => {
       host: true,
       // this sets a default port to 3000
       port: 3000,
+      proxy:{
+        '/api': {
+          target: env.BASE_URL,
+          changeOrigin: true,
+        },
+      }
     },
   })
 }

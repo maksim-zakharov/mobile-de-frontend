@@ -5,7 +5,7 @@ export const api = createApi({
     reducerPath: 'api',
     tagTypes: [],
     baseQuery: retry(fetchBaseQuery({
-        baseUrl: `${process.env.BASE_URL}/api`, // `${process.env.BASE_URL}/api`, // process.env.NODE_ENV !== 'dev' ? '/api' : `${process.env.BASE_URL}/api`
+        baseUrl: process.env.IS_DEV ? '/api' : `${process.env.BASE_URL}/api`, // `${process.env.BASE_URL}/api`, // process.env.NODE_ENV !== 'dev' ? '/api' : `${process.env.BASE_URL}/api`
         paramsSerializer: (params: Record<string, unknown>) => queryString.stringify(params, {arrayFormat: 'none'}),
         // signal: controller.signal
     })),
