@@ -83,6 +83,62 @@ const CarsListPage = () => {
     const [featureSearch, setFeatureSearch] = useState('');
     const filteredFeaturesOptions = useMemo(() => featuresOptions.filter(fo => fo.ru.toLowerCase().includes(featureSearch.toLowerCase())).sort((a, b) => a.ru.localeCompare(b.ru)), [featuresOptions,featureSearch]);
 
+    const securityFeatures = [
+        "ABS",
+        "ESP",
+        "DISTANCE_WARNING_SYSTEM",
+        "HILL_START_ASSIST",
+        "SPEED_LIMITER",
+        "AIR_SUSPENSION",
+        "COLLISION_AVOIDANCE",
+        "LANE_DEPARTURE_WARNING",
+        "BLIND_SPOT_MONITOR",
+        "EMERGENCY_CALL_SYSTEM"
+    ]
+
+    const security2Features = [
+        "IMMOBILIZER",
+        "KEYLESS_ENTRY",
+        "CENTRAL_LOCKING",
+        "ALARM_SYSTEM"
+    ]
+
+    const comfortFeatures = [
+        "CRUISE_CONTROL",
+        "ELECTRIC_ADJUSTABLE_SEATS",
+        "ELECTRIC_BACKSEAT_ADJUSTMENT",
+        "ELECTRIC_TAILGATE",
+        "POWER_ASSISTED_STEERING",
+        "START_STOP_SYSTEM",
+        "CRUISE_CONTROL",
+        "ADAPTIVE_CRUISE_CONTROL",
+        "HEATED_STEERING_WHEEL",
+        "ELECTRIC_WINDOWS",
+        "ELECTRIC_EXTERIOR_MIRRORS",
+        "ELECTRIC_ADJUSTABLE_SEATS",
+        "ELECTRIC_BACKSEAT_ADJUSTMENT"
+    ]
+
+    const lightsFeatures = [
+        "ADAPTIVE_BENDING_LIGHTS",
+        "HEATED_WINDSHIELD",
+        "BI_XENON_HEADLIGHTS",
+        "GLARE_FREE_HIGH_BEAM",
+        "HIGH_BEAM_ASSIST",
+        "BENDING_LIGHTS",
+        "LASER_HEADLIGHTS",
+        "LED_HEADLIGHTS",
+        "LED_RUNNING_LIGHTS",
+        "LIGHT_SENSOR",
+        "NIGHT_VISION_ASSIST",
+        "FRONT_FOG_LIGHTS",
+        "AUTOMATIC_RAIN_SENSOR",
+        "HEADLIGHT_WASHER_SYSTEM",
+        "DAYTIME_RUNNING_LIGHTS",
+        "XENON_HEADLIGHTS",
+        "AMBIENT_LIGHTING"
+    ]
+
     const {data, isFetching: isCarLoading, isError: isCarsError, refetch} = useGetCarsQuery({
         brand,
         model,
@@ -583,13 +639,65 @@ const CarsListPage = () => {
                 <h2>Комплектация</h2>
                 <Input value={featureSearch} size="large" onChange={e => setFeatureSearch(e.target.value)}
                        placeholder="Введите название"/>
-                {filteredFeaturesOptions.map((item) => <Tag.CheckableTag
-                    key={item.value}
-                    checked={_fe.includes(item.value)}
-                    onChange={(checked) => onChangeFeatures('_fe')(item.value, checked)}
-                >
-                    {item.ru}
-                </Tag.CheckableTag>)}
+
+                <h4>Безопасность</h4>
+                {filteredFeaturesOptions
+                    .filter(item => securityFeatures.includes(item.value))
+                    .map((item) => <Tag.CheckableTag
+                        key={item.value}
+                        checked={_fe.includes(item.value)}
+                        onChange={(checked) => onChangeFeatures('_fe')(item.value, checked)}
+                    >
+                        {item.ru}
+                    </Tag.CheckableTag>)}
+                <h4>Комфорт</h4>
+
+                {filteredFeaturesOptions
+                    .filter(item => comfortFeatures.includes(item.value))
+                    .map((item) => <Tag.CheckableTag
+                        key={item.value}
+                        checked={_fe.includes(item.value)}
+                        onChange={(checked) => onChangeFeatures('_fe')(item.value, checked)}
+                    >
+                        {item.ru}
+                    </Tag.CheckableTag>)}
+                <h4>Обзор</h4>
+
+                {filteredFeaturesOptions
+                    .filter(item => lightsFeatures.includes(item.value))
+                    .map((item) => <Tag.CheckableTag
+                        key={item.value}
+                        checked={_fe.includes(item.value)}
+                        onChange={(checked) => onChangeFeatures('_fe')(item.value, checked)}
+                    >
+                        {item.ru}
+                    </Tag.CheckableTag>)}
+                {/*<h4>Мультимедиа</h4>*/}
+                {/*<h4>Салон</h4>*/}
+                <h4>Защита от угона</h4>
+                {filteredFeaturesOptions
+                    .filter(item => security2Features.includes(item.value))
+                    .map((item) => <Tag.CheckableTag
+                        key={item.value}
+                        checked={_fe.includes(item.value)}
+                        onChange={(checked) => onChangeFeatures('_fe')(item.value, checked)}
+                    >
+                        {item.ru}
+                    </Tag.CheckableTag>)}
+                <h4>Другое</h4>
+                {filteredFeaturesOptions
+                    .filter(item => !securityFeatures.includes(item.value)
+                        && !comfortFeatures.includes(item.value)
+                        && !lightsFeatures.includes(item.value)
+                        && !security2Features.includes(item.value)
+                    )
+                    .map((item) => <Tag.CheckableTag
+                        key={item.value}
+                        checked={_fe.includes(item.value)}
+                        onChange={(checked) => onChangeFeatures('_fe')(item.value, checked)}
+                    >
+                        {item.ru}
+                    </Tag.CheckableTag>)}
                 <Button type="primary" loading={isCountFetching} onClick={acceptPrice} size="large">
                     Показать {shortNumberFormat(showCount)} предложений
                 </Button>
