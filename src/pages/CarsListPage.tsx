@@ -1,8 +1,14 @@
-import {Button, Drawer, Input, Select, SelectProps, Space, Spin} from "antd";
+import {Button, Drawer, Input, Select, SelectProps, Space, Spin, Tag} from "antd";
 import {LeftOutlined, SearchOutlined} from "@ant-design/icons";
 import React, {FC, useCallback, useEffect, useMemo, useState} from "react";
 import {useNavigate, useSearchParams} from "react-router-dom";
-import {useGetBrandsQuery, useGetCarsCountQuery, useGetCarsQuery, useGetModelsQuery} from "../api.tsx";
+import {
+    useGetBrandsQuery,
+    useGetCarsCountQuery,
+    useGetCarsQuery,
+    useGetFeaturesQuery,
+    useGetModelsQuery
+} from "../api.tsx";
 import {moneyFormat, shortNumberFormat} from "../utils.ts";
 
 const MobileSelect: FC<SelectProps> = (props) => {
@@ -63,6 +69,7 @@ const CarsListPage = () => {
     const ft = searchParams.getAll('fuel-type') || [];
     const c = searchParams.getAll('c') || [];
     const tr = searchParams.getAll('tr') || [];
+    const fe = searchParams.getAll('fe') || [];
     const page = searchParams.get('page') || '1';
     const {sort: ssort, order} = t(sort);
 
@@ -70,6 +77,11 @@ const CarsListPage = () => {
     if (window.Telegram?.WebApp?.initDataUnsafe) {
         userId = window.Telegram.WebApp.initDataUnsafe.user?.id;
     }
+
+    const {data: featuresData} = useGetFeaturesQuery({});
+    const featuresOptions = featuresData || [];
+    const [featureSearch, setFeatureSearch] = useState('');
+    const filteredFeaturesOptions = useMemo(() => featuresOptions.filter(fo => fo.ru.toLowerCase().includes(featureSearch.toLowerCase())).sort((a, b) => a.ru.localeCompare(b.ru)), [featuresOptions,featureSearch]);
 
     const {data, isFetching: isCarLoading, isError: isCarsError, refetch} = useGetCarsQuery({
         brand,
@@ -88,6 +100,7 @@ const CarsListPage = () => {
         userId,
         c,
         ft,
+        fe,
         con,
         tr
     });
@@ -142,7 +155,7 @@ const CarsListPage = () => {
     }
 
     const clearFilters = () => {
-        Array.from(searchParams.keys()).forEach(key => searchParams.delete(key));
+        Array.from(searchParams.keys()).filter(key => key !== 'drawer').forEach(key => searchParams.delete(key));
         setSearchParams(searchParams);
         setParams({
             _brand: brand || '',
@@ -157,6 +170,7 @@ const CarsListPage = () => {
             _c: c || [],
             _ft: ft || [],
             _tr: tr || [],
+            _fe: fe || [],
             _sort: sort || '',
             _con: con || ''
         })
@@ -165,6 +179,7 @@ const CarsListPage = () => {
     const [{
         _pwFrom,
         _pwTo,
+        _fe,
         _ft,
         _brand,
         _con,
@@ -190,6 +205,7 @@ const CarsListPage = () => {
         _ft: ft || [],
         _c: c || [],
         _tr: tr || [],
+        _fe: fe || [],
         _sort: sort || '',
         _brand: brand || '',
     })
@@ -225,6 +241,7 @@ const CarsListPage = () => {
         pwFrom: _pwFrom,
         pwTo: _pwTo,
         ft: _ft,
+        fe: _fe,
         c: _c,
         tr: _tr,
         brand: _brand,
@@ -271,6 +288,22 @@ const CarsListPage = () => {
         setParams(prevState => ({...prevState, [key]: e}));
     }
 
+    const onChangeFeatures = (key: string) => (value, checked) => {
+        setParams(prevState => {
+            const set = new Set(prevState[key] || []);
+            if(checked){
+                set.add(value)
+            } else {
+                set.delete(value)
+            }
+
+            return {
+                ...prevState,
+                [key]: Array.from(set)
+            }
+        });
+    }
+
     const acceptPrice = () => {
         setCombineResult([]);
         searchParams.set('pwFrom', _pwFrom);
@@ -290,6 +323,8 @@ const CarsListPage = () => {
         _c.forEach(f => searchParams.append('c', f));
         searchParams.delete('tr');
         _tr.forEach(f => searchParams.append('tr', f));
+        searchParams.delete('fe');
+        _fe.forEach(f => searchParams.append('fe', f));
         searchParams.set('page', '1');
         searchParams.delete('drawer');
         setSearchParams(searchParams);
@@ -533,6 +568,15 @@ const CarsListPage = () => {
                 <MobileSelect options={conditionsOptions('Все')} placeholder="Все"
                               size="large" value={_con}
                               className="full-width" onChange={onChangeParams('_con')}/>
+                <h2>Комплектация</h2>
+                <Input value={featureSearch} size="large" onChange={e => setFeatureSearch(e.target.value)} placeholder="Введите название"/>
+                {filteredFeaturesOptions.map((item) => <Tag.CheckableTag
+                    key={item.value}
+                    checked={_fe.includes(item.value)}
+                    onChange={(checked) => onChangeFeatures('_fe')(item.value, checked)}
+                >
+                    {item.ru}
+                </Tag.CheckableTag>)}
                 <Button type="primary" loading={isCountFetching} onClick={acceptPrice} size="large">
                     Показать {shortNumberFormat(showCount)} предложений
                 </Button>

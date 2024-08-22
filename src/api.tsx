@@ -25,7 +25,17 @@ export const api = createApi({
         getBrands: builder.query<any, any>({
             query: (params) => ({method: 'GET', url: '/brands', params})
         }),
+        getFeatures: builder.query<any, any>({
+            query: (params) => ({method: 'GET', url: '/features', params})
+        }),
     })
 })
 
-export const {useGetCarsQuery, useGetBrandsQuery, useGetCarsCountQuery, useGetCarByIdQuery, useGetModelsQuery} = api;
+export const {
+    useGetCarsQuery,
+    useGetFeaturesQuery,
+    useGetBrandsQuery,
+    useGetCarsCountQuery,
+    useGetCarByIdQuery,
+    useGetModelsQuery
+} = api;
