@@ -6,6 +6,14 @@ import {LeftOutlined} from "@ant-design/icons";
 import './CarDetailsPage.less'
 import {moneyFormat} from "../../utils.ts";
 
+const Container = ({childen}) => <div className="container CarDetailsPage">
+        <div className="PageContainer">
+            <Button icon={<LeftOutlined/>} style={{margin: '16px 0 0'}} type="link" size="large"
+                    onClick={() => window.history.back()}/>
+            {childen}
+        </div>
+    </div>
+
 const CarDetailsPage = () => {
     const {id} = useParams();
     const [searchParams, setSearchParams] = useSearchParams();
@@ -21,12 +29,19 @@ const CarDetailsPage = () => {
     const technical = data?.attributes || [];
     const features = data?.features || [];
 
-    return <div className="container CarDetailsPage">
-        <div className="PageContainer">
-            <Button icon={<LeftOutlined/>} style={{margin: '16px 0 0'}} type="link" size="large"
-                    onClick={() => window.history.back()}/>
-            {isFetching && <Spin style={{width: '100%', height: '100%'}}/>}
-            {isError && <Button onClick={refetch} style={{margin: 'auto'}} type="primary">Обновить</Button>}
+    if(isFetching){
+    return <Container>
+            <Spin style={{width: '100%', height: '100%'}}/>
+        </Container>
+    }
+
+    if(isError) {
+    return <Container>
+            <Button onClick={refetch} style={{margin: 'auto'}} type="primary">Обновить</Button>
+        </Container>
+    }
+
+    return <Container>
             <h1 className="PageCard__title">{data?.title}</h1>
             <div className="CardPriceNew-">
                 <span className="CardPriceNew__price">{moneyFormat(data?.price, 0, 0)}</span>
@@ -46,8 +61,7 @@ const CarDetailsPage = () => {
             {features.map(item => <div className="features__name" key={item.value}><span
                 className="catalog-option__name">{item.label}</span>
             </div>)}
-        </div>
-    </div>
+        </Container>
 }
 
 export default CarDetailsPage
