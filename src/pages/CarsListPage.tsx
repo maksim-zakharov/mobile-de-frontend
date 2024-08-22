@@ -357,39 +357,27 @@ const CarsListPage = () => {
         {label: 'Год по возрастанию', value: 'sort=fr&order=asc'},
     ]], [])
 
-    const transmissionsOptions = useCallback((label: string) => [{
-        label,
-        value: ''
-    }, ...[
-        // {label: 'По умолчанию', value: 'sort=rel&order=asc'},
+    const transmissionsOptions = [
         {label: 'Автоматическая', value: 'AUTOMATIC_GEAR'},
         {label: 'Полуавтомат', value: 'SEMIAUTOMATIC_GEAR'},
         {label: 'Механическая', value: 'MANUAL_GEAR'},
-    ]], [])
+    ]
 
-    const categoriesOptions = useCallback((label: string) => [{
-        label,
-        value: ''
-    }, ...[
-        // {label: 'По умолчанию', value: 'sort=rel&order=asc'},
+    const categoriesOptions = [
         {label: 'Седан', value: 'Limousine'},
         {label: 'Купе', value: 'SportsCar'},
         {label: 'Кабриолет', value: 'Cabrio'},
         {label: 'Универсал', value: 'EstateCar'},
         {label: 'Внедорожник', value: 'OffRoad'},
-    ]], [])
+    ]
 
-    const fuelTypesOptions = useCallback((label: string) => [{
-        label,
-        value: ''
-    }, ...[
-        // {label: 'По умолчанию', value: 'sort=rel&order=asc'},
+    const fuelTypesOptions = [
         {label: 'Бензин', value: 'PETROL'},
         {label: 'Дизель', value: 'DIESEL'},
         {label: 'Электро', value: 'ELECTRICITY'},
         {label: 'Гибрид/Бензин', value: 'HYBRID_PETROL'},
         {label: 'Гибрид/Дизель', value: 'HYBRID_DIESEL'},
-    ]], [])
+    ]
 
     const priceOptions = useCallback((label: string) => [{
         label,
@@ -552,24 +540,49 @@ const CarsListPage = () => {
                     {/*             onChange={onChangeParams('_yearTo')}/>*/}
                 </Space.Compact>
                 {/*<Select placeholder="Сортировать по умолчанию" onChange={onChangeSort} options={sortOptions}/>*/}
-
-                <Select mode="multiple" options={transmissionsOptions('Все коробки')} placeholder="Все коробки"
-                        size="large" value={_tr}
-                        className="full-width" onChange={onChangeParams('_tr')}/>
-                <Select mode="multiple" options={categoriesOptions('Все кузова')} placeholder="Все кузова"
-                        size="large" value={_c}
-                        className="full-width" onChange={onChangeParams('_c')}/>
-                <Select mode="multiple" options={fuelTypesOptions('Все двигатели')} placeholder="Все двигатели"
-                        size="large" value={_ft}
-                        className="full-width" onChange={onChangeParams('_ft')}/>
                 <MobileSelect options={sortOptions('Сортировать по умолчанию')} placeholder="Сортировать по умолчанию"
                               size="large" value={_sort}
                               className="full-width" onChange={onChangeParams('_sort')}/>
                 <MobileSelect options={conditionsOptions('Все')} placeholder="Все"
                               size="large" value={_con}
                               className="full-width" onChange={onChangeParams('_con')}/>
+
+                {/*<Select mode="multiple" options={transmissionsOptions('Все коробки')} placeholder="Все коробки"*/}
+                {/*        size="large" value={_tr}*/}
+                {/*        className="full-width" onChange={onChangeParams('_tr')}/>*/}
+                <h3>Коробка</h3>
+                {transmissionsOptions.map((item) => <Tag.CheckableTag
+                    key={item.value}
+                    checked={_tr.includes(item.value)}
+                    onChange={(checked) => onChangeFeatures('_tr')(item.value, checked)}
+                >
+                    {item.label}
+                </Tag.CheckableTag>)}
+                {/*<Select mode="multiple" options={categoriesOptions('Все кузова')} placeholder="Все кузова"*/}
+                {/*        size="large" value={_c}*/}
+                {/*        className="full-width" onChange={onChangeParams('_c')}/>*/}
+                <h3>Кузов</h3>
+                {categoriesOptions.map((item) => <Tag.CheckableTag
+                    key={item.value}
+                    checked={_c.includes(item.value)}
+                    onChange={(checked) => onChangeFeatures('_c')(item.value, checked)}
+                >
+                    {item.label}
+                </Tag.CheckableTag>)}
+                {/*<Select mode="multiple" options={fuelTypesOptions('Все двигатели')} placeholder="Все двигатели"*/}
+                {/*        size="large" value={_ft}*/}
+                {/*        className="full-width" onChange={onChangeParams('_ft')}/>*/}
+                <h3>Двигатель</h3>
+                {fuelTypesOptions.map((item) => <Tag.CheckableTag
+                    key={item.value}
+                    checked={_ft.includes(item.value)}
+                    onChange={(checked) => onChangeFeatures('_ft')(item.value, checked)}
+                >
+                    {item.label}
+                </Tag.CheckableTag>)}
                 <h2>Комплектация</h2>
-                <Input value={featureSearch} size="large" onChange={e => setFeatureSearch(e.target.value)} placeholder="Введите название"/>
+                <Input value={featureSearch} size="large" onChange={e => setFeatureSearch(e.target.value)}
+                       placeholder="Введите название"/>
                 {filteredFeaturesOptions.map((item) => <Tag.CheckableTag
                     key={item.value}
                     checked={_fe.includes(item.value)}
