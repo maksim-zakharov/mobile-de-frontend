@@ -6,11 +6,11 @@ import {LeftOutlined} from "@ant-design/icons";
 import './CarDetailsPage.less'
 import {moneyFormat} from "../../utils.ts";
 
-const Container = ({childen}) => <div className="container CarDetailsPage">
+const Container = ({children}) => <div className="container CarDetailsPage">
         <div className="PageContainer">
             <Button icon={<LeftOutlined/>} style={{margin: '16px 0 0'}} type="link" size="large"
                     onClick={() => window.history.back()}/>
-            {childen}
+            {children}
         </div>
     </div>
 
