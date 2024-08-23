@@ -89,10 +89,12 @@ const CarsListPage = () => {
         "DISTANCE_WARNING_SYSTEM",
         "HILL_START_ASSIST",
         "SPEED_LIMITER",
-        "AIR_SUSPENSION",
+        // "AIR_SUSPENSION",
+        "ISOFIX",
         "COLLISION_AVOIDANCE",
         "LANE_DEPARTURE_WARNING",
         "BLIND_SPOT_MONITOR",
+        "NIGHT_VISION_ASSIST",
         "EMERGENCY_CALL_SYSTEM"
     ]
 
@@ -106,15 +108,25 @@ const CarsListPage = () => {
     const comfortFeatures = [
         "CRUISE_CONTROL",
         "ELECTRIC_ADJUSTABLE_SEATS",
-        "ELECTRIC_BACKSEAT_ADJUSTMENT",
         "ELECTRIC_TAILGATE",
         "POWER_ASSISTED_STEERING",
         "START_STOP_SYSTEM",
         "CRUISE_CONTROL",
         "ADAPTIVE_CRUISE_CONTROL",
-        "HEATED_STEERING_WHEEL",
         "ELECTRIC_WINDOWS",
         "ELECTRIC_EXTERIOR_MIRRORS",
+        "ELECTRIC_ADJUSTABLE_SEATS",
+    ]
+
+    const salonFeatures = [
+        "HEATED_STEERING_WHEEL",
+        "SUNROOF",
+        "PANORAMIC_GLASS_ROOF",
+        "LEATHER_STEERING_WHEEL",
+        "ARM_REST",
+        "VENTILATED_SEATS",
+        "ELECTRIC_HEATED_SEATS",
+        "ELECTRIC_HEATED_REAR_SEATS",
         "ELECTRIC_ADJUSTABLE_SEATS",
         "ELECTRIC_BACKSEAT_ADJUSTMENT"
     ]
@@ -130,7 +142,6 @@ const CarsListPage = () => {
         "LED_HEADLIGHTS",
         "LED_RUNNING_LIGHTS",
         "LIGHT_SENSOR",
-        "NIGHT_VISION_ASSIST",
         "FRONT_FOG_LIGHTS",
         "AUTOMATIC_RAIN_SENSOR",
         "HEADLIGHT_WASHER_SYSTEM",
@@ -684,12 +695,23 @@ const CarsListPage = () => {
                     >
                         {item.ru}
                     </Tag.CheckableTag>)}
+                <h4>Салон</h4>
+                {filteredFeaturesOptions
+                    .filter(item => salonFeatures.includes(item.value))
+                    .map((item) => <Tag.CheckableTag
+                        key={item.value}
+                        checked={_fe.includes(item.value)}
+                        onChange={(checked) => onChangeFeatures('_fe')(item.value, checked)}
+                    >
+                        {item.ru}
+                    </Tag.CheckableTag>)}
                 <h4>Другое</h4>
                 {filteredFeaturesOptions
                     .filter(item => !securityFeatures.includes(item.value)
                         && !comfortFeatures.includes(item.value)
                         && !lightsFeatures.includes(item.value)
                         && !security2Features.includes(item.value)
+                        && !salonFeatures.includes(item.value)
                     )
                     .map((item) => <Tag.CheckableTag
                         key={item.value}
